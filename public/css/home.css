@@ -1,0 +1,56 @@
+
+body {
+    margin: 0 5%;
+
+}
+main {
+    background: #2A254B;
+    display: flex;
+    justify-content: space-between;
+}
+main h1, main p, main button {
+    color: #FFFFFF;
+    max-width: 80%
+}
+.hero_textBlock {
+    padding: 5% 2%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.hero_textBlock button {
+    background-color: rgba(249, 249, 249, 0.15);
+margin-top: 5%
+}
+.hero_textBlock p {
+    font-size: 18px;
+    margin-top: 20%
+}
+.hero_image {
+    object-fit: cover;
+}
+.pros_box {
+    display: flex;
+    justify-content: space-between;
+}
+.pros_title {
+    text-align: center;
+}
+.pro_title {
+    padding: 15px 0 10px 0
+}
+.pros_innerBox {
+    max-width: 20%
+}
+main, section {
+    margin-bottom: 100px
+}
+.products_box {
+    display: flex;
+    justify-content: space-between;
+}
+.product_box {
+    width: max(200px, 100%);
+    aspect-ratio: 1/1;
+    cursor: pointer
+}

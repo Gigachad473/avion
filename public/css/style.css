@@ -1,0 +1,41 @@
+@font-face {
+    font-family: 'ClashDisplay'; /* Choose a name for your font */
+    src: url('../fonts/ClashDisplay_Complete/Fonts/OTF/ClashDisplay-Light.otf') format('opentype') /* Add all font file formats you have */;
+    /* Add more formats if needed */
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Satoshi'; /* Choose a name for your font */
+    src: url('../fonts/Satoshi_Complete/Fonts/OTF/Satoshi-Light.otf') format('opentype') /* Add all font file formats you have */;
+    /* Add more formats if needed */
+    font-weight: normal;
+    font-style: normal;
+}
+h1, h2, h3, h4, h5, h6, a {
+    font-family: 'ClashDisplay', sans-serif;
+    color: #22202E
+
+}
+h1, h2, h3, h4, h5, h6, button, a, p {
+text-decoration: none;
+}
+h1 {
+    font-size: 32px
+}
+p, button {
+    font-size: 16px;
+    font-family: 'Satoshi', sans-serif;
+    color: #2A254B
+}
+button {
+    color: #FFFFFF;
+    padding: 12px 24px;
+    cursor: pointer;
+}
+header {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 10%;
+    align-items: center;
+}
