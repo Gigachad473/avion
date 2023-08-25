@@ -54,3 +54,16 @@ main, section {
     aspect-ratio: 1/1;
     cursor: pointer
 }
+.delete {
+    color: black
+}
+.cart_product {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px
+}
+.cart_product button, .cart_product p {
+    margin: 0;
+    padding: 0;
+}
