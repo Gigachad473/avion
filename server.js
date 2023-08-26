@@ -9,7 +9,7 @@ const nodemailer = require('nodemailer');
 const path = require('path')
 const app = express();
 const port = 3000;
-const stripe = require('stripe')('sk_test_51NJvzEJ3qhyqI7JFZDqaNVfNgvyJR7lxmtuKcSPRpftkWm8qAMhjloXjAwmV9EvGI58Ye4x0mCqMG9tBOy5tjCpW00mOf7e8Ys');
+const stripe = require('stripe')(`${process.env.STRIPE_SECRET_TEST}`);
 
 
 const db = mysql.createConnection({
