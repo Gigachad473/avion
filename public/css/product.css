@@ -50,8 +50,23 @@ button {
 .btn-close {
   --bs-btn-close-focus-shadow: none
 }
-
+.delete {
+  color: black
+}
 .cart_product {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  padding: 20px
+}
+.cart_product button, .cart_product p {
+  margin: 0;
+  padding: 0;
+  color: #000000
+}
+.amountBox {
+  display: flex;
+}
+.amountBox p {
+  padding: 0 10px
 }

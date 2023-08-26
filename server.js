@@ -9,6 +9,8 @@ const nodemailer = require('nodemailer');
 const path = require('path')
 const app = express();
 const port = 3000;
+const stripe = require('stripe')('sk_test_51NJvzEJ3qhyqI7JFZDqaNVfNgvyJR7lxmtuKcSPRpftkWm8qAMhjloXjAwmV9EvGI58Ye4x0mCqMG9tBOy5tjCpW00mOf7e8Ys');
+
 
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
@@ -50,6 +52,9 @@ app.get("/rustic-vase-set", (req, res) => {
 })
 app.get("/the-silky-vase", (req, res) => {
   res.sendFile(path.join(`${staticPath}/products`, "vase.html"))
+})
+app.get("/checkout", (req, res) => {
+  res.sendFile(path.join(staticPath, "checkout.html"))
 })
 
 
@@ -197,6 +202,25 @@ app.get('/subscribe/check/:email', (req, res) => {
     }
     return html;
   };
+  app.post('/charge', async (req, res) => {
+    const token = req.body.token;
+
+    try {
+        // Create a charge using the token
+        const charge = await stripe.charges.create({
+            amount: 1000, // Amount in cents (adjust to your needs)
+            currency: 'usd', // Adjust to your currency
+            description: 'Sample Charge',
+            source: token,
+        });
+
+        // Payment succeeded
+        res.json({ success: true });
+    } catch (error) {
+        // Payment failed
+        res.json({ success: false, error: error.message });
+    }
+});
 // Start the server
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);

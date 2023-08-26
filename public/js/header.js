@@ -38,6 +38,9 @@ header.forEach((header) => {
           <div class="modal-body">
             <p>There is nothing in your cart<p>
           </div>
+          <div class="modal-footer">
+          <button onclick="window.location.href='/checkout'" style="color:black">Checkout</button>
+          </div>
         </div>
       </div>
     </div>

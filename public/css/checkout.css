@@ -1,0 +1,107 @@
+.card {
+  box-shadow: 0px 187px 75px rgba(0, 0, 0, 0.01),
+    0px 105px 63px rgba(0, 0, 0, 0.05), 0px 47px 47px rgba(0, 0, 0, 0.09),
+    0px 12px 26px rgba(0, 0, 0, 0.1), 0px 0px 0px rgba(0, 0, 0, 0.1);
+  border-radius: 26px;
+  width: min(100%, 600px);
+  margin: auto;
+  margin-top: 100px
+}
+
+#card-errors {
+    text-align: center;
+    font-family: 'Roboto Condensed', sans-serif;
+}
+.card-body {
+  padding: 20px;
+}
+/* Blue outline on focus */
+.StripeElement, .form-control {
+    height: 40px;
+    border-radius: 9px !important;
+    outline: none;
+    background-color: #F2F2F2;
+    border: 1px solid #e5e5e500;
+    transition: all 0.3s cubic-bezier(0.15, 0.83, 0.66, 1);
+}
+.StripeElement--focus, .form-control:focus {
+    border: 1px solid transparent !important;
+    box-shadow: 0px 0px 0px 0.5px #3131316e !important;
+    background-color: transparent !important;
+}
+.paypal {
+    height: 55px;
+    background: #FFD700;
+    border-radius: 11px;
+    padding: 0;
+    border: 0;
+    outline: none;
+    margin: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    transition: 0.5s;
+  }
+  .paypal:hover {
+    background: rgba(255, 217, 0, 0.51)
+
+  }
+  .paypal svg {
+    height: 18px;
+
+  }
+  .separator {
+    width: calc(100% - 20px);
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    gap: 10px;
+    color: #8B8E98;
+    margin: 20px 10px 0 10px;
+  }
+  
+  .separator > p {
+    word-break: keep-all;
+    display: block;
+    text-align: center;
+    font-weight: 600;
+    font-size: 11px;
+    margin: auto;
+  }
+  
+  .separator .line {
+    display: inline-block;
+    width: 100%;
+    height: 1px;
+    border: 0;
+    background-color: #e8e8e8;
+    margin: auto;
+  }
+  
+  form label {
+    font-size: 10px;
+    color: #8B8E98;
+    font-weight: 600;
+    margin-bottom: 5px
+  }
+  .pay_button {
+    width: 100%;
+    background: #2A254B;
+    border-radius: 11px;
+    padding: 0;
+    border: 0;
+    height: 50px;
+    margin-top: 50px;
+    font-weight: bold;display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    transition: 0.2s;
+  }
+  .input-group:last-of-type {
+    margin-bottom: 20px !important
+  }
+  .pay_button:hover {
+    background: #211d3d;
+
+  }

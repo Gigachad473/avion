@@ -12,6 +12,13 @@
     font-weight: normal;
     font-style: normal;
 }
+@font-face {
+    font-family: 'Satoshi'; /* Choose a name for your font */
+    src: url('../fonts/Satoshi_Complete/Fonts/OTF/Satoshi-Bold.otf') format('opentype') /* Add all font file formats you have */;
+    /* Add more formats if needed */
+    font-weight: bold;
+    font-style: normal;
+}
 h1, h2, h3, h4, h5, h6, a {
     font-family: 'ClashDisplay', sans-serif;
     color: #22202E
