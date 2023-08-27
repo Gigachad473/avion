@@ -1,13 +1,107 @@
-// Set your publishable key: remember to change this to your live publishable key in production
+
+
+let cartData = localStorage.getItem("cart");
+if (cartData) {
+  cartData = JSON.parse(cartData);
+} else {
+  cartData = [];
+}
+
+        // Get the "products" div to which we will append the product data
+        const productsDiv = document.getElementById("products");
+
+        // Check if there is data in the cart
+        if (cartData && Array.isArray(cartData)) {
+            // Loop through each item in the cart and create product elements
+            cartData.forEach(item => {
+                const productDiv = document.createElement("div");
+                productDiv.classList.add("checkout_product_block");
+
+                productDiv.innerHTML = `
+                    <div class="checkout_product_product">
+                        <img src="${item.productImage}" alt="" class="product_image" />
+                        <div class="product_text_description">
+                            <h5 class="product_title">${item.productTitle}</h5>
+                            <p class="product_description">${item.productDescription}</p>
+                            <p class="product_price">${item.productPrice}</p>
+                        </div>
+                    </div>
+                    <div class="checkout_product_quantity">
+                        <button class="product_minus">-</button>
+                        <p class="product_quantity">${item.productAmount}</p>
+                        <button class="product_plus">+</button>
+                    </div>
+                    <div class="checkout_product_total">
+                        <p class="product_total">£${parseFloat(item.productPrice.replace('£', '')) * item.productAmount}</p>
+                    </div>
+                `;
+
+                // Append the product element to the "products" div
+                productsDiv.appendChild(productDiv);
+            });
+        }
+
+const productAmountInner = document.querySelectorAll(".product_quantity");
+const minusButtons = document.querySelectorAll(".product_minus");
+const plusButtons = document.querySelectorAll(".product_plus");
+
+
+minusButtons.forEach((minus, index) => {
+  minus.addEventListener("click", function() {
+    const currentAmount = parseInt(productAmountInner[index].innerHTML);
+    if (currentAmount > 1) {
+      productAmountInner[index].innerHTML = currentAmount - 1;
+      updateCartInner(index, currentAmount - 1);
+    }
+  });
+});
+
+plusButtons.forEach((plus, index) => {
+  plus.addEventListener("click", function() {
+    const currentAmount = parseInt(productAmountInner[index].innerHTML);
+    productAmountInner[index].innerHTML = currentAmount + 1;
+    updateCartInner(index, currentAmount + 1);
+  });
+});
+
+function updateCartInner(index, newAmount) {
+  // Update the cartData with the new amount for the corresponding product.
+  const productTitle = cartData[index].productTitle;
+  const productPrice = cartData[index].productPrice;
+
+  cartData[index] = {
+    productTitle: productTitle,
+    productAmount: newAmount,
+    productPrice: productPrice,
+  };
+
+  // Update the cartData in localStorage.
+  localStorage.setItem('cart', JSON.stringify(cartData));
+}
+
+// Assuming you have HTML elements with a class "truncate-me"
+const elementsToTruncate = document.querySelectorAll('.product_description');
+const maxLength = 50; // Set your desired maximum length
+
+elementsToTruncate.forEach(function (element) {
+  const originalText = element.textContent;
+
+  if (originalText.length > maxLength) {
+    const truncatedText = originalText.substring(0, maxLength) + '...';
+    element.textContent = truncatedText;
+  }
+});
+
+
+
+
+
 $(document).ready(function(){
 
-  // Create a Stripe client
   var stripe = Stripe('pk_test_51NJvzEJ3qhyqI7JFjuCX1kMPm70bFW75EUWA5h4OxOAt14TqQ4D6fuSS1kEZizQeSu4gsEtLuIulV0Hup8JyQRAj00AqHXGk37');
 
-  // Create an instance of Elements
   var elements = stripe.elements();
 
-  // Try to match bootstrap 4 styling
   var style = {
       base: {
           'lineHeight': '1.35',
@@ -19,21 +113,21 @@ $(document).ready(function(){
 
   // Card number
   var card = elements.create('cardNumber', {
-      'placeholder': '',
+      'placeholder': '4242 4242 4242 4242',
       'style': style
   });
   card.mount('#card-number');
 
   // CVC
   var cvc = elements.create('cardCvc', {
-      'placeholder': '',
+      'placeholder': '123',
       'style': style
   });
   cvc.mount('#card-cvc');
 
   // Card expiry
   var exp = elements.create('cardExpiry', {
-      'placeholder': '',
+      'placeholder': '01/12',
       'style': style
   });
   exp.mount('#card-exp');

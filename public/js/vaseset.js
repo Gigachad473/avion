@@ -2,6 +2,8 @@ const decreaseAmount = document.getElementById("productMinus");
 const increaseAmount = document.getElementById("productPlus");
 const productAmount = document.getElementById("productAmount");
 const productTitle = document.querySelector(".product_title").innerHTML;
+const productImage = document.querySelector(".product_image").src;
+const productDescription = document.querySelector(".product_desc").innerHTML
 
 const addToCart = document.querySelector(".product_add");
 const cartInner = document.querySelector(".modal-body");
@@ -108,7 +110,9 @@ function updateCartData() {
   cartData.push({
     productTitle: productTitle,
     productAmount: parseInt(productAmount.innerHTML),
-    productPrice: productPrice
+    productPrice: productPrice,
+    productImage: productImage,
+    productDescription: productDescription
   });
 addToCart.innerHTML = `Added`
 addToCart.disabled = true
