@@ -1,6 +1,7 @@
 const decreaseAmount = document.getElementById("productMinus");
 const increaseAmount = document.getElementById("productPlus");
 const productAmount = document.getElementById("productAmount");
+const productAmount2 = document.getElementById("productAmount");
 const productTitle = document.querySelector(".product_title").innerHTML;
 console.log(productTitle);
 const productImage = document.querySelector(".product_image").src;
@@ -19,7 +20,7 @@ if (cartData) {
 
 cartInner.innerHTML = ``;
 
-function updateCart() {
+function updateCart() { 
   // Clear the cartInner
   if (cartData !== null && cartData.length > 0) {
     // Code to execute if cartData is not null and not an empty array
@@ -69,9 +70,10 @@ function updateCart() {
       // Remove the item from cartData
       cartData.splice(index, 1);
 
+
       // Update the cart on the webpage and localStorage
       updateCart();
-      // location.reload()
+      location.reload()
     });
 
     // Append the <p> elements to the div
@@ -154,23 +156,28 @@ const productAmountInner = document.querySelectorAll(".amountParagr");
 const minusButtons = document.querySelectorAll(".cartDecrease");
 const plusButtons = document.querySelectorAll(".cartIncrease");
 
+plusButtons.forEach((plus, index) => {
+  plus.addEventListener("click", function () {
+    const currentAmount = parseInt(productAmountInner[index].innerHTML);
+    const newAmount = currentAmount + 1;
+    productAmountInner[index].innerHTML = newAmount;
+    updateCartInner(index, newAmount); // Update cart modal
+    updateAmountInBothPlaces(index, newAmount); // Update product page
+  });
+});
+
 minusButtons.forEach((minus, index) => {
   minus.addEventListener("click", function () {
     const currentAmount = parseInt(productAmountInner[index].innerHTML);
     if (currentAmount > 1) {
-      productAmountInner[index].innerHTML = currentAmount - 1;
-      updateCartInner(index, currentAmount - 1);
+      const newAmount = currentAmount - 1;
+      productAmountInner[index].innerHTML = newAmount;
+      updateCartInner(index, newAmount); // Update cart modal
+      updateAmountInBothPlaces(index, newAmount); // Update product page
     }
   });
 });
 
-plusButtons.forEach((plus, index) => {
-  plus.addEventListener("click", function () {
-    const currentAmount = parseInt(productAmountInner[index].innerHTML);
-    productAmountInner[index].innerHTML = currentAmount + 1;
-    updateCartInner(index, currentAmount + 1);
-  });
-});
 decreaseAmount.addEventListener("click", function () {
   if (productAmount.innerHTML > 1) {
     productAmount.innerHTML--; // Increment the displayed amount
@@ -209,9 +216,23 @@ increaseAmount.addEventListener("click", function () {
     // Call the updateCartInner function with the correct index and newAmount
     updateCartInner(existingItemIndex, newAmount);
   } else {
-    console.error("Item not found in cartData"); // Handle this case if needed
+    updateCartData();
+    // You can also update the UI here to indicate that the product was added to the cart
+    addToCart.innerHTML = `Added`;
+    addToCart.disabled = true;
+    location.reload();
   }
 });
+function updateAmountInBothPlaces(index, newAmount) {
+  // Update the cart modal
+  const amountBox = document.querySelectorAll(".amountBox")[index];
+  const amountParagraph = amountBox.querySelector(".amountParagr");
+  amountParagraph.textContent = newAmount;
+
+  // Update the default amount on the product page
+  productAmount.innerHTML = newAmount;
+}
+
 function updateCartInner(index, newAmount) {
   // Update the cartData with the new amount for the corresponding product.
   const productTitle = cartData[index].productTitle;
@@ -221,6 +242,8 @@ function updateCartInner(index, newAmount) {
     productTitle: productTitle,
     productAmount: newAmount,
     productPrice: productPrice,
+    productImage: productImage,
+    productDescription: productDescription,
   };
 
   // Update the cartData in localStorage.
