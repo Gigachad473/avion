@@ -1,4 +1,5 @@
 // Your existing local.js code here
+document.querySelector('#subscribe-box .error-message').classList.add('unactive');
 
 if (document.getElementById('subscribe-box') !== null) {
     // If the subscribe box is on this page...
@@ -16,9 +17,7 @@ if (document.getElementById('subscribe-box') !== null) {
         if (!validateEmail(input)) {
           // Show an error if it's not
           document.querySelector('#subscribe-box .error-message').classList.add('active');
-          setTimeout(function () {
-            document.querySelector('#subscribe-box .error-message').classList.remove('active');
-          }, 3000);
+          document.querySelector('#subscribe-box .error-message').classList.remove('unactive');
         } else {
           // Otherwise post to our subscribe endpoint
           let postEmailSubscription = await fetch('/subscribe/email', {

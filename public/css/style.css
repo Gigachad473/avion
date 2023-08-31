@@ -1,6 +1,6 @@
 @font-face {
     font-family: 'ClashDisplay'; /* Choose a name for your font */
-    src: url('../fonts/ClashDisplay_Complete/Fonts/OTF/ClashDisplay-Light.otf') format('opentype') /* Add all font file formats you have */;
+    src: url('../fonts/ClashDisplay_Complete/Fonts/OTF/ClashDisplay-Regular.otf') format('opentype') /* Add all font file formats you have */;
     /* Add more formats if needed */
     font-weight: normal;
     font-style: normal;
