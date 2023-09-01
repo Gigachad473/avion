@@ -29,6 +29,7 @@ margin-top: 5%
 }
 .hero_image {
     object-fit: cover;
+    width: min(500px, 100%)
 }
 .pros_box {
     display: flex;

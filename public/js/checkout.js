@@ -97,6 +97,13 @@ elementsToTruncate.forEach(function (element) {
     element.textContent = truncatedText;
   }
 });
+let sum = 0
+const allNums = document.querySelectorAll(".product_total")
+allNums.forEach(num => {
+  num = num.innerHTML.replace(/£/g, '');
+  sum += parseInt(num)
+})
+document.querySelector(".total").innerHTML = `£${sum}`
 
 $(document).ready(function () {
   var stripe = Stripe(
@@ -184,7 +191,7 @@ function initPayPalButton() {
 
       createOrder: function (data, actions) {
         return actions.order.create({
-          purchase_units: [{ amount: { currency_code: "USD", value: 100 } }],
+          purchase_units: [{ amount: { currency_code: "USD", value: sum } }],
         });
       },
 
@@ -200,8 +207,11 @@ function initPayPalButton() {
           // const checkoutButton = document.getElementById("checkout-button")
           // checkoutButton.remove()
           localStorage.clear();
-          actions.redirect("http://localhost:3000/");
-        });
+          document.querySelector(".yas5").classList.add("yas5_display");
+setTimeout(function() {
+  document.querySelector(".yas5").classList.remove("yas5_display");
+}, 2200)
+        }); 
       },
 
       onError: function (err) {
