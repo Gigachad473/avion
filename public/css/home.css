@@ -1,216 +1,286 @@
-
-main, section {
-    margin: auto 5%;
-
-
+main,
+section {
+  margin: auto 5%;
 }
 main {
-    background: #2A254B;
-    display: flex;
-    justify-content: space-between;
+  background: #2a254b;
+  display: flex;
+  justify-content: space-between;
 }
-main h1, main p, main button {
-    color: #FFFFFF;
-    max-width: 80%
+main h1,
+main p,
+main button {
+  color: #ffffff;
+  max-width: 80%;
 }
 .hero_textBlock {
-    padding: 5% 2%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+  padding: 5% 2%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 .hero_textBlock button {
-    background-color: rgba(249, 249, 249, 0.15);
-margin-top: 5%
+  background-color: rgba(249, 249, 249, 0.15);
+  margin-top: 5%;
 }
 .hero_textBlock p {
-    font-size: 18px;
-    margin-top: 20%
+  font-size: 18px;
+  margin-top: 20%;
 }
 .hero_image {
-    object-fit: cover;
-    width: min(500px, 100%)
+  object-fit: cover;
+  width: min(500px, 100%);
 }
 .pros_box {
-    display: flex;
-    justify-content: space-between;
+  display: flex;
+  justify-content: space-between;
 }
 .pros_title {
-    text-align: center;
+  text-align: center;
 }
 .pro_title {
-    padding: 15px 0 10px 0
+  padding: 15px 0 10px 0;
 }
 .pros_innerBox {
-    max-width: 20%
+  max-width: 20%;
 }
-main, section {
-    margin-bottom: 100px
+main,
+section {
+  margin-bottom: 100px;
 }
 .products_box {
-    display: flex;
-    justify-content: space-between;
-    gap: 20px
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
 }
 .product_box {
-    width: max(200px, 100%);
-    aspect-ratio: 12/13;
-    cursor: pointer
+  width: max(200px, 100%);
+  aspect-ratio: 12/13;
+  cursor: pointer;
 }
 .product_image {
-    width: 100%
+  width: 100%;
 }
 .delete {
-    color: black
+  color: black;
 }
 .cart_product {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
 }
-.cart_product button, .cart_product p {
-    margin: 0;
-    padding: 0;
-    color: #000000
+.cart_product button,
+.cart_product p {
+  margin: 0;
+  padding: 0;
+  color: #000000;
 }
 .amountBox {
-    display: flex;
+  display: flex;
 }
 .amountBox p {
-    padding: 0 10px
+  padding: 0 10px;
 }
 .modal-content {
-    border-radius: 0;
-    margin-top: 200px
-  }
-  .btn-close {
-    --bs-btn-close-focus-shadow: none
-  }
-  .subscribe_form {
-    display: flex;
-
-  }
-  .subscribe_input {
-    display: flex;
-padding: 17px 0 17px 32px;
-align-items: center;
-flex: 1 0 0;
-align-self: stretch;
-background: var(--Light-Grey, #F9F9F9);
-  }
-  .form-holder {
-    display: flex;
-    width: min(500px, 100%);
-    justify-content: center;
-    margin: auto;
-  }
-  .subscribe_input::placeholder {
-    opacity: 0.2;
-    color: var(--Dark-Primary, #2A254B);
-    font-family: Satoshi;
-  }
-  .subscribe_button {
-    display: flex;
-padding: 16px 32px;
-background: var(--Dark-Primary, #2A254B);
-color: var(--White, #FFF);
-font-family: Satoshi;
-font-weight: 400;
-
-  }
-  #subscribe-box :is(h2, p, .error-message) {
-    text-align: center;
-  }
-  .unactive {
-    display: none;
-  }
-  .active {
-    display: block;
-    color: #c73e1d;
-  }
-  .about_section {
-    display: flex;
-    gap: 50px
-  }
-  .about_text_block {
-    margin: 20px 0 0 5%;
-    width: 50%;
-  }
-  .about_paragraph2::before {
-    content: "\a\a";
-    white-space: pre;
-  }
-  .about_text {
-    color: #505977;
-
-  }
-  .about_title {
-    color: #2A254B;
-font-size: 24px;
-font-style: normal;
-line-height: 140%; /* 33.6px */
-margin-bottom: 20px
-  }
-  .about_image {
-    width: 50%
-  }
-  .about_section {
-    margin: 0 0 100px 0;
-    margin: auto;
-
-  }
-  footer {
-    background: var(--Dark-Primary, #2A254B);
-    padding: 50px 50px 20px 50px
-  }
-  .footer_join_input {
-    display: flex;
-    width: min(500px, 100%);
-
-  }
-  .footer_input {
-    background: rgba(255, 255, 255, 0.15);
-  }
-  .footer_join_text {
-    color: var(--White, #FFF);
-
-  }
-  .footer_input::placeholder {
-    color: var(--White, #FFF);
-opacity: 1;
-  }
-  .footer_button {
-    background: var(--White, #FFF);
-    color: #2A254B
-  }
+  border-radius: 0;
+  margin-top: 200px;
+}
+.btn-close {
+  --bs-btn-close-focus-shadow: none;
+}
+.subscribe_form {
+  display: flex;
+}
+.subscribe_input {
+  display: flex;
+  padding: 17px 0 17px 32px;
+  align-items: center;
+  flex: 1 0 0;
+  align-self: stretch;
+  background: var(--Light-Grey, #f9f9f9);
+}
+.form-holder {
+  display: flex;
+  width: min(500px, 100%);
+  justify-content: center;
+  margin: auto;
+}
+.subscribe_input::placeholder {
+  opacity: 0.2;
+  color: var(--Dark-Primary, #2a254b);
+  font-family: Satoshi;
+}
+.subscribe_button {
+  display: flex;
+  padding: 16px 32px;
+  background: var(--Dark-Primary, #2a254b);
+  color: var(--White, #fff);
+  font-family: Satoshi;
+  font-weight: 400;
+}
+#subscribe-box :is(h2, p, .error-message) {
+  text-align: center;
+}
+.unactive {
+  display: none;
+}
+.active {
+  display: block;
+  color: #c73e1d;
+}
+.about_section {
+  display: flex;
+  gap: 50px;
+}
+.about_text_block {
+  margin: 20px 0 0 5%;
+  width: 50%;
+}
+.about_paragraph2::before {
+  content: "\a\a";
+  white-space: pre;
+}
+.about_text {
+  color: #505977;
+}
+.about_title {
+  color: #2a254b;
+  font-size: 24px;
+  font-style: normal;
+  line-height: 140%; /* 33.6px */
+  margin-bottom: 20px;
+}
+.about_image {
+  width: 50%;
+}
+.about_section {
+  margin: 0 0 100px 0;
+  margin: auto;
+}
+footer {
+  background: var(--Dark-Primary, #2a254b);
+  padding: 50px 50px 20px 50px;
+}
+.footer_join_input {
+  display: flex;
+  width: min(500px, 100%);
+}
+.footer_input {
+  background: rgba(255, 255, 255, 0.15);
+}
+.footer_join_text {
+  color: var(--White, #fff);
+}
+.footer_input::placeholder {
+  color: var(--White, #fff);
+  opacity: 1;
+}
+.footer_button {
+  background: var(--White, #fff);
+  color: #2a254b;
+}
 
 .footer_served {
-    color: var(--White, #FFF);
-    margin: 0;
-
+  color: var(--White, #fff);
+  margin: 0;
 }
 .footer_bottom {
-    margin-top: 20px;
-    padding-top: 20px;
-    border-top: 2px solid #4E4D93;
-    display: flex;
-    justify-content: space-between;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 2px solid #4e4d93;
+  display: flex;
+  justify-content: space-between;
 }
 .footer_bottom svg {
-    cursor: pointer
+  cursor: pointer;
 }
 
+/*? Media Screens */
 
-  @media screen and (min-width: 1800px) {
-    main,section {
-        width: min(2000px, 100%);
-        margin: auto auto 100px auto;
-    }
-    .about_text_block {
-        margin: 0;
-    }
+@media screen and (min-width: 1800px) {
+  main,
+  section {
+    width: min(2000px, 100%);
+    margin: auto auto 100px auto;
   }
+  .about_text_block {
+    margin: 0;
+  }
+}
 
-
-  
+@media screen and (max-width: 1024px) {
+  .hero_image {
+    width: min(450px, 100%);
+  }
+}
+@media screen and (max-width: 980px) {
+  main {
+    flex-direction: column;
+  }
+  .hero_textBlock p {
+    margin-top: 5%;
+  }
+  .hero_textBlock {
+    text-align: center;
+  }
+  main h1,
+  main p,
+  main button {
+    max-width: 100%;
+  }
+  .hero_image {
+    display: none;
+  }
+  .pros_box {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 50px;
+  }
+  .pros_innerBox {
+    max-width: 100%;
+  }
+}
+@media screen and (max-width: 850px) {
+  .products_box {
+    display: grid;
+    grid-template-columns: auto auto;
+    justify-content: initial;
+  }
+  .product_box {
+    width: 80%
+  }
+  .about_section {
+    flex-direction: column;
+  }
+  .about_text_block {
+    width: 100%;
+    text-align: center;
+    margin: 0;
+    margin-bottom: 100px;
+padding: 0 5%
+  }
+  .about_image {
+    display: none;
+  }
+}
+@media screen and (max-width: 500px) {
+  main, section {
+    margin: auto 2%;
+    margin-bottom: 80px;
+  }
+  .products_box {
+    grid-template-columns: auto;
+  }
+  .product_box {
+    width: min(280px, 100%);
+    margin: auto;
+  }
+  .products_section h3 {
+    text-align: center;
+  }
+  .pros_box {
+    grid-template-columns: auto;
+    text-align: center;
+  }
+}
