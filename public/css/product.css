@@ -70,3 +70,47 @@ button {
 .amountBox p {
   padding: 0 10px
 }
+.product_amount_box p {
+  margin: 0;
+}
+.product_amount {
+  margin: 0;
+}
+
+
+
+
+/*? Media Screens */
+
+@media screen and (min-width: 1700px) {
+  main {
+    width: min(1800px, 100%);
+    margin: auto auto 100px auto;
+  }
+}
+@media screen and (max-width: 768px) {
+  main {
+    flex-direction: column;
+  }
+  .product_image {
+    margin: auto;
+  }
+  .product_textBlock {
+    text-align: center;
+    max-width: 100%;
+    padding: 0 5%;
+  }
+  .product_footer {
+    flex-direction: column;
+  }
+  .product_amountBox {
+    margin: 2% auto;
+  }
+}
+@media screen and (max-width: 425px) {
+  .product_image {
+    width: 60%
+  }
+}
+
+
