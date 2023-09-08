@@ -204,23 +204,26 @@ app.get('/subscribe/check/:email', (req, res) => {
   };
   app.post('/charge', async (req, res) => {
     const token = req.body.token;
-
+    const amount = req.body.amount; // Add this line to receive the payment amount from the frontend
+    console.log(amount)
+  
     try {
-        // Create a charge using the token
-        const charge = await stripe.charges.create({
-            amount: 1000, // Amount in cents (adjust to your needs)
-            currency: 'usd', // Adjust to your currency
-            description: 'Sample Charge',
-            source: token,
-        });
-
-        // Payment succeeded
-        res.json({ success: true });
+      // Create a charge using the token and the received amount
+      const charge = await stripe.charges.create({
+        amount: amount * 100, // Convert amount to cents (Stripe requires it in cents)
+        currency: 'usd', // Adjust to your currency
+        description: 'Sample Charge',
+        source: token,
+      });
+  
+      // Payment succeeded
+      res.json({ success: true });
     } catch (error) {
-        // Payment failed
-        res.json({ success: false, error: error.message });
+      // Payment failed
+      res.json({ success: false, error: error.message });
     }
-});
+  });
+  
 // Start the server
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
