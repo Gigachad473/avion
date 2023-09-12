@@ -199,12 +199,11 @@ $(document).ready(function () {
           .then(function (data) {
             if (data.success) {
               // Payment succeeded, you can redirect or show a success message
-              alert("Payment succeeded!");
               localStorage.clear();
               document.querySelector(".yas5").classList.add("yas5_display");
               setTimeout(function () {
                 document.querySelector(".yas5").classList.remove("yas5_display");
-                location.reload()
+                window.location = "/"
               }, 2200);
             } else {
               // Payment failed, display an error message
@@ -239,10 +238,8 @@ function initPayPalButton(sum) {
         return actions.order.capture().then(function (orderData) {
           // Handle the approval as needed
           localStorage.clear();
-          document.querySelector(".yas5").classList.add("yas5_display");
-          setTimeout(function () {
-            document.querySelector(".yas5").classList.remove("yas5_display");
-          }, 2200);
+          localStorage.setItem("paymentApproved", "true"); // Store approval status
+          window.location = "/"; // Redirect to homepage
         });
       },
 

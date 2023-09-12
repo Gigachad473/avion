@@ -8,6 +8,7 @@ header.forEach((header) => {
       height="16"
       viewBox="0 0 16 16"
       fill="none"
+      class="header_svg"
     >
       <rect
         width="16"

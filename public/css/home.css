@@ -284,3 +284,25 @@ padding: 0 5%
     text-align: center;
   }
 }
+@media screen and (max-width: 420px) {
+  .form-holder {
+    flex-direction: column;
+  }
+  .subscribe_button {
+    margin: 20px auto auto auto;
+    padding: 16px 80px
+  }
+  .subscribe_input {
+    width: 90%;
+    margin: auto;
+  }
+  .footer_join_input {
+    flex-direction: column;
+  }
+  .footer_join_text {
+    text-align: center;
+  }
+  footer {
+    padding: 50px 20px 20px 20px;
+  }
+}

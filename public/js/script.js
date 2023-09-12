@@ -27,3 +27,16 @@ darkModeMediaQuery.addEventListener("change", (event) => {
     console.log("Other theme");
   }
 });
+// Check if payment was approved
+const paymentApproved = localStorage.getItem("paymentApproved");
+if (paymentApproved === "true") {
+  // Display the success animation
+  document.querySelector(".yas5").classList.add("yas5_display");
+
+  // Remove the "approved" status from local storage after 5 seconds
+  setTimeout(function () {
+    document.querySelector(".yas5").classList.remove("yas5_display");
+    localStorage.removeItem("paymentApproved");
+  }, 2200); // Adjust the timeout as needed
+}
+

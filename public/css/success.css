@@ -4,18 +4,36 @@
   display: block !important;
   width: 305px;
   height: 277px;
-  top: 50%;
+  top: 12%;
   right: 50%;
   transform: translate(50%, -50%);
+  box-shadow: 0px 0px 50px 1000px rgba(0,0,0,0.6);
+  background-color: rgba(0,0,0,0.6);
+  border: none !important;
+  outline: none !important;
+  z-index: 100000;
 }
 .yas5 {
 display: none;
+}
+body:has(.yas5_display) {
+  overflow: hidden;
+  box-shadow: 0px 0px 50px 1000px rgba(0,0,0,0.6);
+  background-color: rgba(0,0,0,0.6);
+  position: relative;
+  z-index: 10000;
+
+
+}
+body:has(.yas5_display) .header_svg {
+  background: rgba(0,0,0,0.6)
 }
 .yas5_text {
     position: absolute;
     top: 110%;
     left: 12%;
-    font-size: 24px
+    font-size: 24px;
+    color: #FFFFFF
 }
 .yas5 .All {
   position: absolute;
