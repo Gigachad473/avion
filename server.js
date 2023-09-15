@@ -171,26 +171,17 @@ app.get('/subscribe/check/:email', (req, res) => {
   app.post("/unsubscribe", (req, res) => {
     const email = req.body.email;
 
-    // Check if the email exists in the database
-    const checkEmailSql = "SELECT * FROM subscribers WHERE email = ?";
-    db.query(checkEmailSql, [email], (err, results) => {
+    // Check if the email exists in the database and mark it as unsubscribed
+    const sql = "UPDATE subscribers SET is_subscribed = 0 WHERE email = ?";
+    db.query(sql, [email], (err, result) => {
         if (err) {
-            console.error("Error checking email:", err);
-            res.status(500).send("Error checking email.");
-        } else if (results.length === 0) {
+            console.error("Error unsubscribing:", err);
+            res.status(500).send("Error unsubscribing.");
+        } else if (result.affectedRows === 0) {
             // Email not found in the database
             res.status(404).send("Email not found in the database.");
         } else {
-            // Email exists, mark it as unsubscribed
-            const unsubscribeSql = "UPDATE subscribers SET is_subscribed = 0 WHERE email = ?";
-            db.query(unsubscribeSql, [email], (err, result) => {
-                if (err) {
-                    console.error("Error unsubscribing:", err);
-                    res.status(500).send("Error unsubscribing.");
-                } else {
-                    res.send(`Unsubscribed email: ${email}`);
-                }
-            });
+            res.send(`Unsubscribed email: ${email}`);
         }
     });
 });

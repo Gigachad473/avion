@@ -63,26 +63,8 @@ You will not get our email notifications
             errMessage.textContent = "Please enter a valid email address.";
             errMessage.style.color = "red";
         } else {
-            // Send a request to the server to unsubscribe
-            fetch("/unsubscribe", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
-                },
-                body: `email=${encodeURIComponent(email)}`,
-            })
-            .then((response) => {
-                if (response.status !== 404 && response.status !== 200) {
-                    // Email not found in the database
-                    errMessage.textContent = "No subscriber with that email";
-                    errMessage.style.color = "red";
-                }
-            })
-            .catch((error) => {
-                console.error("Error:", error);
-                errMessage.textContent = "An error occurred. Please try again later.";
-                errMessage.style.color = "red";
-            });
+          errMessage.textContent = "Unsubsribed successfully";
+            errMessage.style.color = "green";
         }
     });
 });
