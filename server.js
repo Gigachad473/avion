@@ -56,6 +56,9 @@ app.get("/the-silky-vase", (req, res) => {
 app.get("/checkout", (req, res) => {
   res.sendFile(path.join(staticPath, "checkout.html"))
 })
+app.get("/unsubscribe", (req, res) => {
+  res.sendFile(path.join(staticPath, "unsubscribe.html"))
+})
 
 
 //DB
@@ -128,7 +131,8 @@ app.post('/subscribe/email', async (req, res) => {
                 subject: "Welcome email",
                 replyTo: process.env.contactEmail,
                 headers: { 'Mime-Version': '1.0', 'X-Priority': '3', 'Content-type': 'text/html; charset=iso-8859-1' },
-                html: `Welcome to our newsletter`
+                html: `Welcome to our newsletter,
+                You can unsubscribe by clicking here: <a href="https://avion-l631.onrender.com/unsubscribe">Unsubscribe</a>`
               })
               
               res.status(200).json({ message: 'User has subscribed', code: '03' });
@@ -164,20 +168,32 @@ app.get('/subscribe/check/:email', (req, res) => {
   });
   
   // Unsubscribe route
-  app.get('/unsubscribe/:email', (req, res) => {
-    const email = req.params.email;
-  
-    db.query('DELETE FROM subscriptions WHERE email = ?', [email], (err, result) => {
-      if (err) {
-        console.error('MySQL query error:', err);
-        res.status(500).json({ message: 'Error unsubscribing', code: '02' });
-      } else if (result.affectedRows === 0) {
-        res.status(404).json({ message: 'Email not found', code: '01' });
-      } else {
-        res.status(200).json({ message: 'Email deleted', code: '00' });
-      }
+  app.post("/unsubscribe", (req, res) => {
+    const email = req.body.email;
+
+    // Check if the email exists in the database
+    const checkEmailSql = "SELECT * FROM subscribers WHERE email = ?";
+    db.query(checkEmailSql, [email], (err, results) => {
+        if (err) {
+            console.error("Error checking email:", err);
+            res.status(500).send("Error checking email.");
+        } else if (results.length === 0) {
+            // Email not found in the database
+            res.status(404).send("Email not found in the database.");
+        } else {
+            // Email exists, mark it as unsubscribed
+            const unsubscribeSql = "UPDATE subscribers SET is_subscribed = 0 WHERE email = ?";
+            db.query(unsubscribeSql, [email], (err, result) => {
+                if (err) {
+                    console.error("Error unsubscribing:", err);
+                    res.status(500).send("Error unsubscribing.");
+                } else {
+                    res.send(`Unsubscribed email: ${email}`);
+                }
+            });
+        }
     });
-  });
+});
   
 
   

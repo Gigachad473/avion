@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Avion - Unsubscribe from our newsletter</title>
+    <link
+      rel="stylesheet"
+      href="css/bootstrap-5.3.1-dist/css/bootstrap.min.css"
+    />
+
+    <link rel="stylesheet" href="css/home.css" />
+    <link rel="stylesheet" href="css/reset.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <style>
+      section {
+        position: absolute;
+        margin-left: auto;
+        margin-right: auto;
+        left: 0;
+        right: 0;
+        top: 20%;
+      }
+    </style>
+  </head>
+  <body>
+    <section class="subscription_section">
+      <div id="subscribe-box">
+        <h2>Unsubscribe from our newsletter</h2>
+        <p>
+You will not get our email notifications
+        </p>
+        <div class="error-message">Not a valid email</div>
+        <div class="form-holder">
+          <form
+            action="/subscribe/email"
+            method="post"
+            class="subscribe_form"
+          ></form>
+          <input
+            type="text"
+            name="email"
+            value=""
+            placeholder="your@email.com"
+            class="subscribe_input emailInput"
+          />
+          <input type="submit" value="Unsubscribe" class="unsubscribeButton subscribe_button" />
+        </div>
+      </div>
+    </section>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const errMessage = document.querySelector(".error-message")
+    const emailInput = document.querySelector(".emailInput");
+    const unsubscribeButton = document.querySelector(".unsubscribeButton");
+    const resultMessage = document.getElementById("resultMessage");
+    errMessage.innerHTML = ""
+
+    unsubscribeButton.addEventListener("click", function () {
+        const email = emailInput.value.trim();
+
+        if (email === "") {
+            errMessage.textContent = "Please enter a valid email address.";
+            errMessage.style.color = "red";
+        } else {
+            // Send a request to the server to unsubscribe
+            fetch("/unsubscribe", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: `email=${encodeURIComponent(email)}`,
+            })
+            .then((response) => {
+                if (response.status !== 404 && response.status !== 200) {
+                    // Email not found in the database
+                    errMessage.textContent = "No subscriber with that email";
+                    errMessage.style.color = "red";
+                }
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+                errMessage.textContent = "An error occurred. Please try again later.";
+                errMessage.style.color = "red";
+            });
+        }
+    });
+});
+
+    </script>
+  </body>
+</html>
