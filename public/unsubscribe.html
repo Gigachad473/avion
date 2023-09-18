@@ -33,10 +33,10 @@ You will not get our email notifications
         <div class="error-message">Not a valid email</div>
         <div class="form-holder">
           <form
-            action="/subscribe/email"
+            action="/unsubscribe"
             method="post"
             class="subscribe_form"
-          ></form>
+          >
           <input
             type="text"
             name="email"
@@ -45,30 +45,50 @@ You will not get our email notifications
             class="subscribe_input emailInput"
           />
           <input type="submit" value="Unsubscribe" class="unsubscribeButton subscribe_button" />
+        </form>
         </div>
       </div>
     </section>
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const errMessage = document.querySelector(".error-message")
-    const emailInput = document.querySelector(".emailInput");
-    const unsubscribeButton = document.querySelector(".unsubscribeButton");
-    const resultMessage = document.getElementById("resultMessage");
-    errMessage.innerHTML = ""
+const form = document.querySelector('.subscribe_form');
+const emailInput = document.querySelector('.emailInput');
+const errMessage = document.querySelector(".error-message")
+errMessage.innerHTML = ""
 
-    unsubscribeButton.addEventListener("click", function () {
-        const email = emailInput.value.trim();
+form.addEventListener('submit', (event) => {
+  event.preventDefault();
 
-        if (email === "") {
-            errMessage.textContent = "Please enter a valid email address.";
-            errMessage.style.color = "red";
-        } else {
-          errMessage.textContent = "Unsubsribed successfully";
-            errMessage.style.color = "green";
-        }
-    });
+  const email = emailInput.value;
+
+  // Send the email address to the Node.js server using a POST request
+  fetch('/unsubscribe', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ email }),
+  })
+  .then((response) => {
+    console.log(response); // Add this line to inspect the response
+    if(response.status == 200) {
+      errMessage.innerHTML = "Unsubscrbed Successfully"
+      errMessage.style.color = "green"
+
+    }
+    if(response.status == 422) {
+      errMessage.innerHTML = "Incorrect email"
+      errMessage.style.color = "red"
+
+    }
+    if(response.status == 500) {
+      errMessage.innerHTML = "Error from our side"
+      errMessage.style.color = "red"
+
+    }
+    // Parse the JSON response if it's valid JSON
+    return response.json();
+  })
 });
-
     </script>
   </body>
 </html>

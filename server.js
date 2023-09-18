@@ -169,10 +169,29 @@ app.get('/subscribe/check/:email', (req, res) => {
   
   // Unsubscribe route
   app.post("/unsubscribe", (req, res) => {
-    const email = req.body.email;
+    const { email } = req.body;
+    console.log(email);
+    const query = 'SELECT * FROM subscriptions WHERE email = ?';
 
-    // Check if the email exists in the database and mark it as unsubscribed
-    const sql = "UPDATE subscribers SET is_subscribed = 0 WHERE email = ?";
+    db.query(query, [email], (error, results) => {
+      if (error) {
+        console.error('Database error:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+      }
+  
+      if (results.length === 0) {
+        // User not found in the database
+        return res.status(422).json({ error: 'User not found' });
+      }
+  
+      // User found, handle the unsubscribe process
+      // ...
+      // Send a success response if necessary
+      return res.status(200).json({ message: 'Unsubscribe successful' });
+    });
+
+    // Check if the email exists in the database and delete the row
+    const sql = "DELETE FROM subscriptions WHERE email = ?";
     db.query(sql, [email], (err, result) => {
         if (err) {
             console.error("Error unsubscribing:", err);
