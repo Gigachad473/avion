@@ -10,7 +10,6 @@ const path = require("path");
 const app = express();
 const port = 3000;
 const stripe = require("stripe")(`${process.env.STRIPE_SECRET_TEST}`);
-const bcrypt = require("bcrypt");
 
 const db = mysql.createConnection({
   host: process.env.DB_HOST,
@@ -257,81 +256,7 @@ const replaceHTML = (html, replacements) => {
   }
   return html;
 };
-app.post("/createUser", async (req, res) => {
-  const user = req.body.email;
-  const hashedPassword = await bcrypt.hash(req.body.password, 10);
 
-  const sqlSearch = "SELECT * FROM userTable WHERE user = ?";
-  const search_query = mysql.format(sqlSearch, [user]);
-  const sqlInsert = "INSERT INTO userTable VALUES (0,?,?)";
-  const insert_query = mysql.format(sqlInsert, [user, hashedPassword]);
-
-  db.query(search_query, async (err, results) => {
-    if (err) {
-      console.error("Error executing SELECT query:", err);
-      return res.sendStatus(500);
-    }
-
-    console.log("------> Search Results");
-    console.log(results.length);
-
-    if (results.length !== 0) {
-      console.log("------> User already exists");
-      return res.sendStatus(409);
-    }
-
-    // User doesn't exist, insert the new user
-    db.query(insert_query, (err, result) => {
-      if (err) {
-        console.error("Error executing INSERT query:", err);
-        return res.sendStatus(500);
-      }
-
-      console.log("--------> Created new User");
-      console.log(result.insertId);
-      res.sendStatus(201);
-      res.redirect("/");
-    });
-  });
-});
-app.post("/userLogin", (req, res) => {
-  const user = req.body.email;
-  const password = req.body.password;
-  console.log(user)
-  console.log(password)
-
-  const sqlSearch = "SELECT * FROM userTable WHERE user = ?";
-  const search_query = mysql.format(sqlSearch, [user]);
-
-  db.query(search_query, async (err, results) => {
-    if (err) {
-      console.error("Error executing SELECT query:", err);
-      return res.sendStatus(500);
-    }
-
-    if (results.length === 0) {
-      console.log("--------> User does not exist");
-      return res.sendStatus(404);
-    }
-
-    const hashedPassword = results[0].password;
-
-    try {
-      const passwordMatch = await bcrypt.compare(password, hashedPassword);
-
-      if (passwordMatch) {
-        console.log("---------> Login Successful");
-        res.send(`${user} is logged in!`);
-      } else {
-        console.log("---------> Password Incorrect");
-        res.send("Password incorrect!");
-      }
-    } catch (error) {
-      console.error("Error comparing passwords:", error);
-      res.sendStatus(500);
-    }
-  });
-});
 
 app.post("/charge", async (req, res) => {
   const token = req.body.token;
