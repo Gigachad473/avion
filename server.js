@@ -10,6 +10,9 @@ const path = require("path");
 const app = express();
 const port = 3000;
 const stripe = require("stripe")(`${process.env.STRIPE_SECRET_TEST}`);
+const cookieParser = require("cookie-parser");
+const bcrypt = require("bcrypt");
+const session = require("express-session");
 
 const db = mysql.createConnection({
   host: process.env.DB_HOST,
@@ -34,6 +37,14 @@ const transporter = nodemailer.createTransport({
 app.use(bodyParser.json());
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(
+  session({
+    secret: "129urieodsfoiu2uroikjshohkfskkfdsjfL:@fjgslgksdf",
+    resave: false,
+    saveUninitialized: false,
+  })
+);
 
 let staticPath = path.join(__dirname, "public");
 app.get("/", (req, res) => {
@@ -59,6 +70,9 @@ app.get("/unsubscribe", (req, res) => {
 });
 app.get("/login", (req, res) => {
   res.sendFile(path.join(staticPath, "login.html"));
+});
+app.get("/register", (req, res) => {
+  res.sendFile(path.join(staticPath, "register.html"));
 });
 
 //DB
@@ -256,6 +270,115 @@ const replaceHTML = (html, replacements) => {
   }
   return html;
 };
+
+// Handle registration (Step 5)
+app.post("/register", async (req, res) => {
+  const { email, password } = req.body;
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  db.query(
+    "INSERT INTO users (email, password) VALUES (?, ?)",
+    [email, hashedPassword],
+    (err) => {
+      if (err) {
+        console.error("Registration failed:", err);
+        res.redirect("/register");
+      } else {
+        res.redirect("/login");
+      }
+    }
+  );
+});
+
+// Login form (HTML)
+app.get("/login", (req, res) => {
+  res.sendFile(__dirname + "/public/login.html");
+});
+
+// Handle login (Step 6)
+app.post("/login", async (req, res) => {
+  const { email, password, rememberMe } = req.body;
+
+  db.query(
+    "SELECT * FROM users WHERE email = ?",
+    [email],
+    async (err, results) => {
+      if (err) {
+        console.error("Login failed:", err);
+        res.redirect("/login");
+      } else if (results.length > 0) {
+        const user = results[0];
+        const match = await bcrypt.compare(password, user.password);
+        // Set the session cookie maxAge based on the "Remember Me" checkbox
+        if (rememberMe) {
+          req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000; // 30 days in milliseconds
+        }
+
+        if (match) {
+          req.session.userId = user.id;
+          res.redirect("/profile");
+        } else {
+          res.redirect("/login");
+        }
+      } else {
+        res.redirect("/login");
+      }
+    }
+  );
+});
+
+app.get("/profile", (req, res) => {
+  if (req.session.userId) {
+    const userId = req.session.userId;
+
+    // Fetch user data
+    db.query(
+      "SELECT email FROM users WHERE id = ?",
+      [userId],
+      (userErr, userResults) => {
+        if (userErr) {
+          console.error("Error fetching user data:", userErr);
+          res.redirect("/login");
+        } else {
+          const email = userResults[0].email;
+
+          // Fetch user's orders
+          db.query(
+            "SELECT order_id, order_date FROM orders2 WHERE user_id = ?",
+            [userId],
+            (orderErr, orderResults) => {
+              if (orderErr) {
+                console.error("Error fetching user's orders:", orderErr);
+                res.redirect("/login");
+              } else {
+                const orders = orderResults.map((row) => ({
+                  orderId: row.order_id,
+                  orderDate: row.order_date,
+                }));
+
+                // Render the profile page with user data and orders
+                res.render("profile.ejs", { email, orders });
+              }
+            }
+          );
+        }
+      }
+    );
+  } else {
+    res.redirect("/login");
+  }
+});
+
+
+// "Stay Signed In" Feature (Step 8)
+app.get("/logout", (req, res) => {
+  req.session.destroy(() => {
+    res.redirect("/login");
+  });
+});
+
+
+
 
 
 app.post("/charge", async (req, res) => {
