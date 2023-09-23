@@ -19,7 +19,7 @@ if (cartData && Array.isArray(cartData)) {
                     <div class="checkout_product_product">
                         <img src="${
                           item.productImage
-                        }" alt="" class="product_image" />
+                        }" alt="${item.productTitle}" class="product_image" />
                         <div class="product_text_description">
                             <h5 class="product_title">${item.productTitle}</h5>
                             <p class="product_description">${
@@ -39,12 +39,34 @@ if (cartData && Array.isArray(cartData)) {
                           item.productAmount
                         }</p>
                     </div>
+                    <button class="delete" style="color: #000000" data-index="${item.id}">x</button>
                 `;
 
     // Append the product element to the "products" div
     productsDiv.appendChild(productDiv);
   });
 }
+// Add an event listener for delete buttons
+const deleteButtons = document.querySelectorAll(".delete");
+deleteButtons.forEach((deleteButton) => {
+  deleteButton.addEventListener("click", function () {
+    const index = this.getAttribute("data-index");
+
+    // Remove the product element from the DOM
+    const productDiv = this.closest(".checkout_product_block");
+    productDiv.remove();
+
+    // Remove the corresponding item from cartData
+    cartData.splice(index, 1);
+
+    // Update the cartData in localStorage
+    localStorage.setItem("cart", JSON.stringify(cartData));
+
+    // Recalculate and update the sum
+    const updatedSum = updateSum();
+    updatePayPalButton(updatedSum);
+  });
+});
 
 const productAmountInner = document.querySelectorAll(".product_quantity");
 const minusButtons = document.querySelectorAll(".product_minus");
@@ -176,7 +198,11 @@ console.log(updateSum());
   
   form.addEventListener("submit", function (event) {
     const fullName = document.getElementById("name").value
+    document.getElementById("payment-submit").disabled = true;
+setTimeout(function() {
+  document.getElementById("payment-submit").disabled = false;
 
+}, 2000)
     event.preventDefault();
     stripe.createToken(card).then(function (result) {
       if (result.error) {
@@ -221,6 +247,12 @@ console.log(updateSum());
             });
               // Payment succeeded, you can redirect or show a success message
               localStorage.clear();
+              window.scroll({
+                top: 0,
+                left: 0,
+                behavior: 'auto' // This provides a smooth scrolling animation
+              });
+              
               setTimeout(function () {
                 document.body.classList.add('active');
                 svg.setProgress(1);
@@ -257,6 +289,12 @@ function initPayPalButton(sum) {
           // Handle the approval as needed
           localStorage.clear();
           localStorage.setItem("paymentApproved", "true"); // Store approval status
+          window.scroll({
+            top: 0,
+            left: 0,
+            behavior: 'auto' // This provides a smooth scrolling animation
+          });
+          
           // window.location = "/"; // Redirect to homepage
           setTimeout(function () {
             document.body.classList.add('active');
