@@ -304,8 +304,9 @@ app.post("/register", async (req, res) => {
 
 app.post("/check-profile", (req, res) => {
   if (req.session.userId) {
-    res.redirect("/profile");
+    res.status(200).send("Success")
 } else {
+  res.status(404).send("Error")
 }
 })
 
