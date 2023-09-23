@@ -129,7 +129,7 @@ function updateSum() {
 
 console.log(updateSum());
 
-$(document).ready(function () {
+
   var stripe = Stripe(
     "pk_test_51NJvzEJ3qhyqI7JFjuCX1kMPm70bFW75EUWA5h4OxOAt14TqQ4D6fuSS1kEZizQeSu4gsEtLuIulV0Hup8JyQRAj00AqHXGk37"
   );
@@ -200,11 +200,10 @@ $(document).ready(function () {
             if (data.success) {
               // Payment succeeded, you can redirect or show a success message
               localStorage.clear();
-              document.querySelector(".yas5").classList.add("yas5_display");
               setTimeout(function () {
-                document.querySelector(".yas5").classList.remove("yas5_display");
-                window.location = "/"
-              }, 2200);
+                document.body.classList.add('active');
+                svg.setProgress(1);
+            }, 200);
             } else {
               // Payment failed, display an error message
               alert("Payment failed: " + data.error);
@@ -214,8 +213,6 @@ $(document).ready(function () {
     });
   });
   
-  
-});
 initPayPalButton(updateSum());
 
 function initPayPalButton(sum) {
@@ -239,7 +236,11 @@ function initPayPalButton(sum) {
           // Handle the approval as needed
           localStorage.clear();
           localStorage.setItem("paymentApproved", "true"); // Store approval status
-          window.location = "/"; // Redirect to homepage
+          // window.location = "/"; // Redirect to homepage
+          setTimeout(function () {
+            document.body.classList.add('active');
+            svg.setProgress(1);
+        }, 200);
         });
       },
 

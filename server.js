@@ -32,7 +32,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-//Routing
+//?Routing
 
 app.use(bodyParser.json());
 app.use(express.static("public"));
@@ -75,7 +75,7 @@ app.get("/register", (req, res) => {
   res.sendFile(path.join(staticPath, "register.html"));
 });
 
-//DB
+//?DB
 
 db.connect((err) => {
   if (err) {
@@ -84,6 +84,15 @@ db.connect((err) => {
     console.log("Connected to MySQL database");
   }
 });
+
+
+
+//? Subscription Service
+
+
+
+
+
 const mailer = async function (title, obj) {
   try {
     const email = "Your static email text here"; // Replace with your static email text
@@ -262,16 +271,18 @@ const validateEmail = (email) => {
   return regex.test(email);
 };
 
-// Utility function to replace placeholders in HTML
-const replaceHTML = (html, replacements) => {
-  for (const key in replacements) {
-    const regex = new RegExp(`{{${key}}}`, "g");
-    html = html.replace(regex, replacements[key]);
-  }
-  return html;
-};
 
-// Handle registration (Step 5)
+
+
+
+//? Registration/Login System
+
+
+
+
+
+
+//? Handle registration (Step 5)
 app.post("/register", async (req, res) => {
   const { email, password } = req.body;
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -381,6 +392,13 @@ app.get("/logout", (req, res) => {
 
 
 
+
+//? Payments Processing
+
+
+
+
+
 app.post("/charge", async (req, res) => {
   const token = req.body.token;
   const amount = req.body.amount; // Add this line to receive the payment amount from the frontend
@@ -401,6 +419,42 @@ app.post("/charge", async (req, res) => {
     // Payment failed
     res.json({ success: false, error: error.message });
   }
+});
+
+app.post("/store-order", (req, res) => {
+  const orderDetails = req.body;
+
+  // Create an array of formatted product entries
+  const productEntries = orderDetails.products.map(
+    (product) => `${product.productTitle} * ${product.productQuantity}`
+  );
+
+  // Join the formatted entries with line breaks
+  const cartData = productEntries.join('\n');
+
+  // Convert the order date to your local time (GMT+2)
+  const orderDate = new Date(orderDetails.orderDate);
+  orderDate.setHours(orderDate.getHours() + 2); // Add 2 hours to convert to GMT+2
+  const formattedOrderDate = orderDate.toISOString().slice(0, 19).replace('T', ' ');
+
+  // Insert orderDetails into the 'orders' table in the MySQL database
+  connection.query(
+    "INSERT INTO orders (total, cartData, first_name, last_name, order_date) VALUES (?, ?, ?, ?, ?)",
+    [orderDetails.total, cartData, orderDetails.firstName, orderDetails.lastName, formattedOrderDate],
+    (error, results, fields) => {
+      if (error) {
+        console.error('Error storing order in MySQL:', error);
+        res.status(500).send("Error storing order. Please try again later.");
+      } else {
+        console.log('Order stored in MySQL:', results);
+        // res.send("Order received and stored successfully.");
+      }
+    }
+  );
+
+  
+  // Redirect or respond as needed
+  res.redirect("https://hekto-yb2r.onrender.com/success");
 });
 
 // Start the server

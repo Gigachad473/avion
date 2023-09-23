@@ -22,6 +22,13 @@
   <body>
     <header></header>
     <div class="body">
+      <div class="success-message">
+        <svg viewBox="0 0 76 76" class="success-message__icon icon-checkmark">
+            <circle cx="38" cy="38" r="36"/>
+            <path fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="M17.7,40.9l10.9,10.9l28.7-28.7"/>
+        </svg>
+        <h1 class="success-message__title">Payment Succeeded</h1>
+    </div>
 
       <div class="checkout">
         <div class="checkout_top">
@@ -81,7 +88,7 @@
               <p>or pay using credit card</p>
               <hr class="line" />
             </div>
-            <form id="payment-form order-form">
+            <form id="payment-form">
               <div id="card-errors" role="alert"></div>
 
               <label for="name">Card holder full name</label>
@@ -138,5 +145,36 @@
     ></script>
     <script src="js/header.js"></script>
     <script src="js/checkout.js"></script>
+    <script>
+      function PathLoader(el) {
+	this.el = el;
+    this.strokeLength = el.getTotalLength();
+	
+    // set dash offset to 0
+    this.el.style.strokeDasharray =
+    this.el.style.strokeDashoffset = this.strokeLength;
+}
+
+PathLoader.prototype._draw = function (val) {
+    this.el.style.strokeDashoffset = this.strokeLength * (1 - val);
+}
+
+PathLoader.prototype.setProgress = function (val, cb) {
+	this._draw(val);
+    if(cb && typeof cb === 'function') cb();
+}
+
+PathLoader.prototype.setProgressFn = function (fn) {
+	if(typeof fn === 'function') fn(this);
+}
+
+var body = document.body,
+    svg = document.querySelector('svg path');
+const buttonner = document.querySelector(".button25")
+if(svg !== null) {
+    svg = new PathLoader(svg);
+
+}
+    </script>
   </body>
 </html>
