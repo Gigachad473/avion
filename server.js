@@ -73,6 +73,7 @@ app.get("/login", (req, res) => {
 });
 app.get("/register", (req, res) => {
   res.sendFile(path.join(staticPath, "register.html"));
+
 });
 
 //?DB
@@ -300,6 +301,13 @@ app.post("/register", async (req, res) => {
     }
   );
 });
+
+app.post("/check-profile", (req, res) => {
+  if (req.session.userId) {
+    res.redirect("/profile");
+} else {
+}
+})
 
 // Login form (HTML)
 app.get("/login", (req, res) => {
