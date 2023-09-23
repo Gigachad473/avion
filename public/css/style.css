@@ -46,3 +46,7 @@ header {
     padding: 10px 10%;
     align-items: center;
 }
+.user_icon {
+    margin-right: 20px;
+    cursor: pointer
+}

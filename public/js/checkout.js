@@ -175,6 +175,8 @@ console.log(updateSum());
   // ...
   
   form.addEventListener("submit", function (event) {
+    const fullName = document.getElementById("name").value
+
     event.preventDefault();
     stripe.createToken(card).then(function (result) {
       if (result.error) {
@@ -198,6 +200,25 @@ console.log(updateSum());
           })
           .then(function (data) {
             if (data.success) {
+              const orderDetails = {
+                products: cartData, // Your array of cart items
+                total: updatedSum, // Total order amount
+                name: fullName,
+                orderDate: new Date().toISOString() // Current date and time
+            };
+    console.log(orderDetails)
+            // Send the order details to your server using a fetch or AJAX request
+            fetch('/store-order', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(orderDetails)
+            }).then(response => {
+                // Handle the response if needed
+            }).catch(error => {
+                console.error('Error storing order:', error);
+            });
               // Payment succeeded, you can redirect or show a success message
               localStorage.clear();
               setTimeout(function () {

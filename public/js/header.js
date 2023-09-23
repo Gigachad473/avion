@@ -2,7 +2,7 @@ const header = document.querySelectorAll('header')
 header.forEach((header) => {
     header.innerHTML = `
     <a href="/">Avion</a
-    ><button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal"><svg
+    ><div><svg onclick="window.location.href='/register'" class="user_icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg><button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal"><svg
       xmlns="http://www.w3.org/2000/svg"
       width="16"
       height="16"
@@ -41,6 +41,7 @@ header.forEach((header) => {
           </div>
           <div class="modal-footer">
           <button onclick="window.location.href='/checkout'" style="color:black">Checkout</button>
+          </div>
           </div>
         </div>
       </div>

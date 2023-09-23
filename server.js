@@ -327,6 +327,7 @@ app.post("/login", async (req, res) => {
 
         if (match) {
           req.session.userId = user.id;
+          req.session.email = user.email; // Store the user's email in the session
           res.redirect("/profile");
         } else {
           res.redirect("/login");
@@ -352,26 +353,22 @@ app.get("/profile", (req, res) => {
           res.redirect("/login");
         } else {
           const email = userResults[0].email;
+    // Fetch user orders based on their email
+    db.query(
+      "SELECT * FROM orders2 WHERE user_email = ?",
+      [email],
+      (orderErr, orderResults) => {
+        if (orderErr) {
+          console.error("Error fetching user orders:", orderErr);
+          res.redirect("/login");
+        } else {
+          // Render the profile view and pass user orders as a variable
+          res.render("profile.ejs", { email, orders: orderResults });
+        }
+      }
+    );
 
-          // Fetch user's orders
-          db.query(
-            "SELECT order_id, order_date FROM orders2 WHERE user_id = ?",
-            [userId],
-            (orderErr, orderResults) => {
-              if (orderErr) {
-                console.error("Error fetching user's orders:", orderErr);
-                res.redirect("/login");
-              } else {
-                const orders = orderResults.map((row) => ({
-                  orderId: row.order_id,
-                  orderDate: row.order_date,
-                }));
 
-                // Render the profile page with user data and orders
-                res.render("profile.ejs", { email, orders });
-              }
-            }
-          );
         }
       }
     );
@@ -423,10 +420,14 @@ app.post("/charge", async (req, res) => {
 
 app.post("/store-order", (req, res) => {
   const orderDetails = req.body;
+  console.log(orderDetails)
+  const userEmail = req.session.userId ? req.session.email : "guest@example.com";
+  console.log(userEmail)
+
 
   // Create an array of formatted product entries
   const productEntries = orderDetails.products.map(
-    (product) => `${product.productTitle} * ${product.productQuantity}`
+    (product) => `${product.productTitle} * ${product.productAmount}`
   );
 
   // Join the formatted entries with line breaks
@@ -438,9 +439,9 @@ app.post("/store-order", (req, res) => {
   const formattedOrderDate = orderDate.toISOString().slice(0, 19).replace('T', ' ');
 
   // Insert orderDetails into the 'orders' table in the MySQL database
-  connection.query(
-    "INSERT INTO orders (total, cartData, first_name, last_name, order_date) VALUES (?, ?, ?, ?, ?)",
-    [orderDetails.total, cartData, orderDetails.firstName, orderDetails.lastName, formattedOrderDate],
+  db.query(
+    "INSERT INTO orders2 (total, cartData, name, order_date, user_email) VALUES (?, ?, ?, ?, ?)",
+    [orderDetails.total, cartData, orderDetails.name, formattedOrderDate, userEmail],
     (error, results, fields) => {
       if (error) {
         console.error('Error storing order in MySQL:', error);
