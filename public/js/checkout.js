@@ -173,7 +173,6 @@ couponForm.addEventListener("submit", function (event) {
       if (data.success) {
         console.log(data);
         // Coupon applied successfully
-        alert("Coupon applied successfully!");
         document.getElementById("coupon-status").innerHTML =
           "Coupon applied successfully";
         document.getElementById("coupon-status").style.color = "green";
