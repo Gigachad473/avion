@@ -377,7 +377,7 @@ app.post("/login", async (req, res) => {
 
           req.session.userId = user.id;
           req.session.email = user.email; // Store the user's email in the session
-          res.redirect("/profile");
+          res.status(200).send("Success");
         } else {
           // Email and password do not match
           res.status(401).send("Unauthorized");
@@ -502,6 +502,137 @@ app.post("/if-procceeded", (req, res) => {
       console.log(false)
     }
 })
+const crypto = require('crypto');
+
+function generateToken(length) {
+  // Define the characters that can be used in the token
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+  // Initialize an empty token
+  let token = '';
+
+  // Generate a random character for the token 'length' number of times
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    token += characters.charAt(randomIndex);
+  }
+
+  return token;
+}
+
+app.get('/forgot-password', (req, res) => {
+  res.sendFile(__dirname + '/public/forgot-password.html');
+});
+// Nodemailer functionality (Step 4)
+app.post('/forgot-password', (req, res) => {
+  const { email } = req.body;
+
+  // Generate a unique reset token
+  const resetToken = generateToken(8);
+
+  // Store the token in the database for the user
+  db.query(
+    'UPDATE users SET reset_token = ? WHERE email = ?',
+    [resetToken, email],
+    (err, result) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send('An error occurred while updating the reset token.');
+      } else if (result.affectedRows === 0) {
+        // User not found, handle this case
+        res.status(404).send('User not found.');
+      } else {
+        // Send the password reset email
+        const resetLink = `http://localhost:3000/reset-password/${resetToken}`;
+        const mailOptions = {
+          from: 'ilahristoforov88@gmail.com',
+          to: email,
+          subject: 'Password Reset',
+          text: `Click the following link to reset your password: ${resetLink}`,
+        };
+
+        // Send the email
+        transporter.sendMail(mailOptions, (emailErr) => {
+          if (emailErr) {
+            console.error(emailErr);
+            res.status(500).send('An error occurred while sending the email.');
+          } else {
+            res.status(200).send('Password reset email sent successfully.');
+          }
+        });
+      }
+    }
+  );
+});
+
+// Handle password reset (Step 2)
+app.get('/reset-password/:token', (req, res) => {
+  const { token } = req.params;
+  res.sendFile(__dirname + '/public/reset-password.html');
+});
+
+// Handle password reset (Step 3)
+app.post('/reset-password/:token', async (req, res) => {
+
+  const { newPassword } = req.body;
+  const email = req.body.email
+  let token
+  try {
+    // Retrieve the reset_token from the database
+    const result = await new Promise((resolve, reject) => {
+      db.query('SELECT * from users WHERE email = ?', [email], (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      });
+    });
+
+    if (result.length === 0) {
+      res.status(404).send('User not found.');
+      return;
+    }
+
+    token = result[0].reset_token;
+    console.log(token);
+  } catch (err) {
+    console.log(err)
+  }
+
+  // Validate the reset token
+  db.query(
+    'SELECT * FROM users WHERE reset_token = ?',
+    [token],
+    async (err, results) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send('An error occurred while checking the reset token.');
+      } else if (results.length === 0) {
+        // Token not found or expired, handle this case
+        res.status(404).send('Invalid or expired reset token.');
+      } else {
+        // Update the user's password and clear the reset token
+        const userId = results[0].id;
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        db.query(
+          'UPDATE users SET password = ?, reset_token = NULL WHERE id = ?',
+          [hashedPassword, userId],
+          (updateErr) => {
+            if (updateErr) {
+              console.error(updateErr);
+              res.status(500).send('An error occurred while resetting the password.');
+            } else {
+              res.status(200).send('Password reset successfully. You can now <a href="/login">log in.</a>');
+            }
+          }
+        );
+      }
+    }
+  );
+});
+
 
 
 
