@@ -311,7 +311,7 @@ app.post("/register", async (req, res) => {
     (err, result) => {
       if (err) {
         console.error("Registration failed:", err);
-        res.redirect("/register");
+        res.status(408).send("Error")
       } else {
         // Generate a coupon for the registered user
         const couponCode = generateUniqueCouponCode();
@@ -361,28 +361,32 @@ app.post("/login", async (req, res) => {
     async (err, results) => {
       if (err) {
         console.error("Login failed:", err);
-        res.redirect("/login");
-      } else if (results.length > 0) {
+        res.status(500).send("Internal Server Error");
+      } else if (results.length === 0) {
+        // User does not exist
+        res.status(405).send("User Not Found");
+      } else {
         const user = results[0];
         const match = await bcrypt.compare(password, user.password);
-        // Set the session cookie maxAge based on the "Remember Me" checkbox
-        if (rememberMe) {
-          req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000; // 30 days in milliseconds
-        }
 
         if (match) {
+          // Set the session cookie maxAge based on the "Remember Me" checkbox
+          if (rememberMe) {
+            req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000; // 30 days in milliseconds
+          }
+
           req.session.userId = user.id;
           req.session.email = user.email; // Store the user's email in the session
           res.redirect("/profile");
         } else {
-          res.redirect("/login");
+          // Email and password do not match
+          res.status(401).send("Unauthorized");
         }
-      } else {
-        res.redirect("/login");
       }
     }
   );
 });
+
 
 app.get("/profile", (req, res) => {
   if (req.session.userId) {
