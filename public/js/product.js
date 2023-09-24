@@ -112,6 +112,7 @@ function updateCartData() {
   }
 
   // Add the updated product to the cart
+  console.log(productPrice)
   cartData.push({
     productTitle: productTitle,
     productAmount: parseInt(productAmount.innerHTML),

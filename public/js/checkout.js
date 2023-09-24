@@ -12,6 +12,7 @@ const productsDiv = document.getElementById("products");
 if (cartData && Array.isArray(cartData)) {
   // Loop through each item in the cart and create product elements
   cartData.forEach((item) => {
+    console.log(item.productPrice)
     const productDiv = document.createElement("div");
     productDiv.classList.add("checkout_product_block");
 
