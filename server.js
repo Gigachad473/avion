@@ -33,9 +33,12 @@ const transporter = nodemailer.createTransport({
 });
 
 //?Routing
+// Set the views directory
 
 app.use(bodyParser.json());
 app.use(express.static("public"));
+app.use(express.json());
+
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(
@@ -47,6 +50,10 @@ app.use(
 );
 
 let staticPath = path.join(__dirname, "public");
+app.set("views", path.join(staticPath, "views"));
+
+// Set the view engine to EJS
+app.set("view engine", "ejs");
 app.get("/", (req, res) => {
   res.sendFile(path.join(staticPath, "index.html"));
 });
@@ -73,7 +80,6 @@ app.get("/login", (req, res) => {
 });
 app.get("/register", (req, res) => {
   res.sendFile(path.join(staticPath, "register.html"));
-
 });
 
 //?DB
@@ -86,13 +92,7 @@ db.connect((err) => {
   }
 });
 
-
-
 //? Subscription Service
-
-
-
-
 
 const mailer = async function (title, obj) {
   try {
@@ -272,18 +272,35 @@ const validateEmail = (email) => {
   return regex.test(email);
 };
 
-
-
-
-
 //? Registration/Login System
 
+function generateUniqueCouponCode() {
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const codeLength = 8; // You can adjust the length as needed
+  let couponCode = "";
 
+  for (let i = 0; i < codeLength; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    couponCode += characters.charAt(randomIndex);
+  }
 
+  return couponCode;
+}
+function calculateExpirationDate() {
+  const currentDate = new Date();
+  const expirationDate = new Date(currentDate);
+  expirationDate.setDate(currentDate.getDate() + 30); // Add 30 days
 
+  // Format the expiration date as a MySQL-friendly date string (YYYY-MM-DD)
+  const year = expirationDate.getFullYear();
+  const month = (expirationDate.getMonth() + 1).toString().padStart(2, "0");
+  const day = expirationDate.getDate().toString().padStart(2, "0");
 
+  return `${year}-${month}-${day}`;
+}
 
-//? Handle registration (Step 5)
+// Handle registration (Step 5)
 app.post("/register", async (req, res) => {
   const { email, password } = req.body;
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -291,11 +308,30 @@ app.post("/register", async (req, res) => {
   db.query(
     "INSERT INTO users (email, password) VALUES (?, ?)",
     [email, hashedPassword],
-    (err) => {
+    (err, result) => {
       if (err) {
         console.error("Registration failed:", err);
         res.redirect("/register");
       } else {
+        // Generate a coupon for the registered user
+        const couponCode = generateUniqueCouponCode();
+        const discountPercentage = 10;
+        const userId = result.insertId; // Get the user's ID from the registration result
+        const expirationDate = calculateExpirationDate(); // Implement this function
+
+        // Insert the coupon into the database
+        db.query(
+          "INSERT INTO coupons (coupon_code, discount_percentage, user_id, expiration_date, status) VALUES (?, ?, ?, ?, ?)",
+          [couponCode, discountPercentage, userId, expirationDate, "unused"],
+          (couponErr) => {
+            if (couponErr) {
+              console.error("Coupon generation failed:", couponErr);
+            } else {
+              console.log("Coupon generated and stored successfully.");
+            }
+          }
+        );
+
         res.redirect("/login");
       }
     }
@@ -304,11 +340,11 @@ app.post("/register", async (req, res) => {
 
 app.post("/check-profile", (req, res) => {
   if (req.session.userId) {
-    res.status(200).send("Success")
-} else {
-  res.status(404).send("Error")
-}
-})
+    res.status(200).send("Success");
+  } else {
+    res.status(404).send("Error");
+  }
+});
 
 // Login form (HTML)
 app.get("/login", (req, res) => {
@@ -362,22 +398,37 @@ app.get("/profile", (req, res) => {
           res.redirect("/login");
         } else {
           const email = userResults[0].email;
-    // Fetch user orders based on their email
-    db.query(
-      "SELECT * FROM orders2 WHERE user_email = ?",
-      [email],
-      (orderErr, orderResults) => {
-        if (orderErr) {
-          console.error("Error fetching user orders:", orderErr);
-          res.redirect("/login");
-        } else {
-          // Render the profile view and pass user orders as a variable
-          res.render("profile.ejs", { email, orders: orderResults });
-        }
-      }
-    );
 
-
+          // Fetch user orders based on their email
+          db.query(
+            "SELECT * FROM orders2 WHERE user_email = ?",
+            [email],
+            (orderErr, orderResults) => {
+              if (orderErr) {
+                console.error("Error fetching user orders:", orderErr);
+                res.redirect("/login");
+              } else {
+                // Fetch user coupons
+                db.query(
+                  "SELECT * FROM coupons WHERE user_id = ? AND status = 'unused' ",
+                  [userId],
+                  (couponErr, couponResults) => {
+                    if (couponErr) {
+                      console.error("Error fetching user coupons:", couponErr);
+                      res.redirect("/login");
+                    } else {
+                      // Render the profile view and pass user orders and coupons as variables
+                      res.render("profile.ejs", {
+                        email,
+                        orders: orderResults,
+                        coupons: couponResults, // Pass the coupons variable here
+                      });
+                    }
+                  }
+                );
+              }
+            }
+          );
         }
       }
     );
@@ -386,25 +437,71 @@ app.get("/profile", (req, res) => {
   }
 });
 
-
 // "Stay Signed In" Feature (Step 8)
 app.get("/logout", (req, res) => {
   req.session.destroy(() => {
     res.redirect("/login");
   });
 });
+let shouldMarkCouponAsUsed = false; // Initialize the flag
+let results2 = []; // Initialize results as an empty array
+
+app.post("/apply-coupon", (req, res) => {
+  const { couponCode } = req.body;
+  const userId = req.session.userId; // Assuming you have user sessions
+
+  // Check if the coupon exists and is not used
+  db.query(
+    "SELECT * FROM coupons WHERE coupon_code = ? AND user_id = ? AND status = 'unused'",
+    [couponCode, userId],
+    (err, results) => {
+      if (err) {
+        console.error("Coupon validation failed:", err);
+        res.json({ success: false, message: "Coupon validation failed" });
+      } else if (results.length === 0) {
+        res.json({ success: false, message: "Coupon does not exist or is already used" });
+      } else {
+        // Get the discount percentage from the database results
+        const discountPercentage = results[0].discount_percentage;
+
+        // Apply the discount logic here if needed
+        // Optionally, update the total amount
+
+        // Mark the coupon as used
+results2 = results
+        shouldMarkCouponAsUsed = true;
 
 
 
+        // Include the discount percentage in the response
+        res.json({ success: true, discountPercentage });
+      }
+    }
+  );
+});
 
+app.post("/if-procceeded", (req, res) => {
+  const { trueOrfalse } = req.body;
+  if (trueOrfalse === true && shouldMarkCouponAsUsed) {
+    console.log(true)
+    // Mark the coupon as used
+    db.query(
+      "UPDATE coupons SET status = 'used' WHERE id = ?",
+      [results2[0].id],
+      (updateErr) => {
+        if (updateErr) {
+          console.error("Coupon update failed:", updateErr);
+        }
+      }
+    );
+    } else {
+      console.log(false)
+    }
+})
 
 
 
 //? Payments Processing
-
-
-
-
 
 app.post("/charge", async (req, res) => {
   const token = req.body.token;
@@ -430,10 +527,11 @@ app.post("/charge", async (req, res) => {
 
 app.post("/store-order", (req, res) => {
   const orderDetails = req.body;
-  console.log(orderDetails)
-  const userEmail = req.session.userId ? req.session.email : "guest@example.com";
-  console.log(userEmail)
-
+  console.log(orderDetails);
+  const userEmail = req.session.userId
+    ? req.session.email
+    : "guest@example.com";
+  console.log(userEmail);
 
   // Create an array of formatted product entries
   const productEntries = orderDetails.products.map(
@@ -441,29 +539,37 @@ app.post("/store-order", (req, res) => {
   );
 
   // Join the formatted entries with line breaks
-  const cartData = productEntries.join('\n');
+  const cartData = productEntries.join("\n");
 
   // Convert the order date to your local time (GMT+2)
   const orderDate = new Date(orderDetails.orderDate);
   orderDate.setHours(orderDate.getHours() + 2); // Add 2 hours to convert to GMT+2
-  const formattedOrderDate = orderDate.toISOString().slice(0, 19).replace('T', ' ');
+  const formattedOrderDate = orderDate
+    .toISOString()
+    .slice(0, 19)
+    .replace("T", " ");
 
   // Insert orderDetails into the 'orders' table in the MySQL database
   db.query(
     "INSERT INTO orders2 (total, cartData, name, order_date, user_email) VALUES (?, ?, ?, ?, ?)",
-    [orderDetails.total, cartData, orderDetails.name, formattedOrderDate, userEmail],
+    [
+      orderDetails.total,
+      cartData,
+      orderDetails.name,
+      formattedOrderDate,
+      userEmail,
+    ],
     (error, results, fields) => {
       if (error) {
-        console.error('Error storing order in MySQL:', error);
+        console.error("Error storing order in MySQL:", error);
         res.status(500).send("Error storing order. Please try again later.");
       } else {
-        console.log('Order stored in MySQL:', results);
+        console.log("Order stored in MySQL:", results);
         // res.send("Order received and stored successfully.");
       }
     }
   );
 
-  
   // Redirect or respond as needed
   res.redirect("https://hekto-yb2r.onrender.com/success");
 });

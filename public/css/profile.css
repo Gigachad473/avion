@@ -1,0 +1,220 @@
+
+
+.my_account_orders {
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+  }
+  
+  .my_account_orders th {
+    text-align: left;
+    font-family: 'ClashDisplay', sans-serif;
+      color: #22202E
+  }
+  
+  tr {
+    border-bottom: 1px solid #ccc;
+  }
+  
+  th,
+  td {
+    padding: 6px;
+  }
+  td {
+    font-family: 'Satoshi', sans-serif;
+      color: #2A254B
+  }
+  
+  @media 
+  only screen and (max-width: 600px) {
+    /* Force table to not be like tables anymore */
+      table, thead, tbody, th, td, tr { 
+          display: block; 
+      }
+    
+    /* Hide table headers (but not display: none;, for accessibility) */
+      thead tr { 
+          position: absolute;
+          top: -9999px;
+          left: -9999px;
+      }
+    
+    td { 
+          /* Behave  like a "row" */
+          border: none;
+          border-bottom: 1px solid #eee; 
+          position: relative;
+          padding-left: 35%; 
+      }
+    
+    td:last-child { 
+           border-width: 0;
+      }
+    
+    td:before { 
+       content: attr(data-title);
+       color: #ccc;
+          /* Now like a table header */
+          position: absolute;
+          /* Top/left values mimic padding */
+          top: 6px;
+          left: 6px;
+          width: 45%; 
+          padding-right: 10px; 
+          white-space: nowrap;
+      }
+  }
+
+
+
+.container {
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+.card {
+  width: 400px;
+  height: 180px;
+  border-radius: 5px;
+  box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.2);
+  background-color: #fff;
+  padding: 10px 10px;
+  position: relative;
+}
+
+.main,
+.copy-button {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 10px;
+  align-items: center;
+}
+
+.co-img img {
+  width: 100px;
+  height: 100px;
+}
+.vertical {
+  border-left: 5px dotted black;
+  height: 100px;
+  position: absolute;
+  left: 40%;
+}
+
+.content h1 {
+  font-size: 35px;
+  margin-left: -20px;
+  color: #565656;
+}
+
+.content h1 span {
+  font-size: 18px;
+}
+.content h2 {
+  font-size: 18px;
+  margin-left: -20px;
+  color: #565656;
+  text-transform: uppercase;
+}
+
+.content p {
+  font-size: 16px;
+  color: #696969;
+  margin-left: -20px;
+}
+
+.copy-button {
+  margin: 12px 0 -5px 0;
+  height: 45px;
+  border-radius: 4px;
+  padding: 0 5px;
+  border: 1px solid #e1e1e1;
+}
+
+.copy-button input {
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  font-size: 15px;
+}
+
+.copy-button button {
+  padding: 5px 20px;
+  background-color: #dc143c;
+  color: #fff;
+  border: 1px solid transparent;
+}
+
+.buy{
+ position: absolute;
+  content: "";
+  bottom: 20px;
+  left:20px;
+  background-color: #dc143c;
+ }
+
+ [data-tab-content] {
+    display: none;
+  }
+  
+  .active[data-tab-content] {
+    display: block;
+  }
+  
+  body {
+    padding: 0;
+    margin: 0;
+  }
+  
+  .tabs {
+    display: flex;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    border-bottom: 1px solid black;
+    flex-direction: column;
+    height: 100%;
+    max-width: 120px;
+    width: 120px
+  }
+  
+  .tab {
+    cursor: pointer;
+    padding: 10px;
+    transition: 0.2s;
+    font-family: 'ClashDisplay', sans-serif;
+
+  }
+  
+  .tab.active {
+    background-color: #111;
+    color: #fff
+  }
+  
+  .tab:hover {
+    background-color: #111;
+    color: #fff
+  }
+  
+  .tab-content {
+    margin-left: 20px;
+    margin-right: 20px;
+    width: 100%;
+  }
+
+
+  .body {
+    display: flex;
+  }
+  
+  
+  
+  
+  
+  
+  
+  
+  

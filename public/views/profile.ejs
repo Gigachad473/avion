@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <!-- Include Bootstrap CSS or your preferred CSS -->
+    <link rel="stylesheet" href="css/bootstrap-5.3.1-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/reset.css">
+    <link rel="stylesheet" href="../css/profile.css">
+</head>
+<body>
+  <header>
+  </header>
+
+  <div class="body">
+  <ul class="tabs">
+    <li data-tab-target="#home" class="active tab">Home</li>
+    <li data-tab-target="#pricing" class="tab">Coupons</li>
+    <li data-tab-target="#about" class="tab">Orders</li>
+  </ul>
+  
+  <div class="tab-content">
+    <div id="home" data-tab-content class="active">
+      <a href="/">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 512 512"
+        >
+          <title>ionicons-v5-a</title>
+          <polyline
+            points="244 400 100 256 244 112"
+            style="
+              fill: none;
+              stroke: #000;
+              stroke-linecap: round;
+              stroke-linejoin: round;
+              stroke-width: 48px;
+            "
+          />
+          <line
+            x1="120"
+            y1="256"
+            x2="412"
+            y2="256"
+            style="
+              fill: none;
+              stroke: #000;
+              stroke-linecap: round;
+              stroke-linejoin: round;
+              stroke-width: 48px;
+            "
+          /></svg>
+          Go on homepage
+      </a>
+      <h1>Welcome, <%= email %>!</h1>
+      <a href="/logout"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M13.8 12H3"/></svg>Logout</a>
+
+    </div>
+    <div id="pricing" data-tab-content>
+      <a href="/">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 512 512"
+        >
+          <title>ionicons-v5-a</title>
+          <polyline
+            points="244 400 100 256 244 112"
+            style="
+              fill: none;
+              stroke: #000;
+              stroke-linecap: round;
+              stroke-linejoin: round;
+              stroke-width: 48px;
+            "
+          />
+          <line
+            x1="120"
+            y1="256"
+            x2="412"
+            y2="256"
+            style="
+              fill: none;
+              stroke: #000;
+              stroke-linecap: round;
+              stroke-linejoin: round;
+              stroke-width: 48px;
+            "
+          /></svg>
+          Go on homepage
+      </a>
+      <p>
+        <div class="container">
+          <% coupons.forEach(coupon => { %>
+
+          <div class="card">
+            <div class="main">
+              <div class="co-img">
+                <img
+                  src="../images/blackLogo.png"
+                  alt=""
+                />
+              </div>
+              <div class="vertical"></div>
+              <div class="content">
+                <h2>Registration Coupon</h2>
+                <p>%<%= coupon.discount_percentage %> <span>Discount</span></p>
+                <p>Valid till <span class="coupon_time"><%= coupon.expiration_date %></span></p>
+              </div>
+            </div>
+            <div class="copy-button">
+              <input id="copyvalue" type="text" readonly value="<%= coupon.coupon_code %>" />
+              <button onclick="copyIt()" class="copybtn">COPY</button>
+            </div>
+          </div>
+          <% }); %>
+
+        </div></p>
+        </div>
+    <div id="about" data-tab-content>
+      <a href="/">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 512 512"
+        >
+          <title>ionicons-v5-a</title>
+          <polyline
+            points="244 400 100 256 244 112"
+            style="
+              fill: none;
+              stroke: #000;
+              stroke-linecap: round;
+              stroke-linejoin: round;
+              stroke-width: 48px;
+            "
+          />
+          <line
+            x1="120"
+            y1="256"
+            x2="412"
+            y2="256"
+            style="
+              fill: none;
+              stroke: #000;
+              stroke-linecap: round;
+              stroke-linejoin: round;
+              stroke-width: 48px;
+            "
+          /></svg>
+          Go on homepage
+      </a>
+      <p>  <h2>Your Orders:</h2>
+        <table class="shop_table my_account_orders">
+      
+          <thead>
+            <tr>
+              <th class="order-id">ID</th>
+      
+              <th class="order-date">Products</th>
+              <th class="order-status">Total</th>
+              <th class="order-total">Date</th>
+            </tr>
+          </thead>
+        
+          <tbody>
+            <% let rowNumber = 1; %>
+      
+            <% orders.forEach(order => { %>
+      
+            <tr class="order">
+              <td class="order-number" data-title="ID">
+                <%= rowNumber %>
+              </td>
+              <td class="order-actions" data-title="Products">
+                <%= order.cartData %>
+              </td>
+      
+        
+              <td class="order-total" data-title="Total">
+                <span class="amount">$<%= order.total %></span>
+              </td>
+              <td class="order-date" data-title="Date">
+                <time datetime="2014-06-12" title="1402562157"><%= order.order_date %></time>
+              </td>
+      
+            </tr>
+            <% rowNumber++; %>
+      
+            <% }); %>
+      
+          </tbody>
+        </table></p>
+    </div>
+  </div>
+  </div>
+  
+        
+       
+        
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+
+
+<script src="css/bootstrap-5.3.1-dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="../js/profile.js">
+
+</script>
+<script src="../js/header.js"></script>
+</body>
+</html>

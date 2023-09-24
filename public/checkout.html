@@ -80,10 +80,21 @@
           <div class="products" id="products"></div>
         </div>
       </div>
+
+    
       <div class="container-fluid">
         <div class="card">
           <div class="card-body">
+
             <p style="font-weight: bold;">Test Payments Only</p>
+            <form id="coupon-form">
+              <label for="coupon-code">Promo Code</label>
+<label for="coupon-code" id="coupon-status"></label>
+              <div class="search">
+                <input placeholder="Your Code" type="text" id="coupon-code">
+                <button type="submit">Submit</button>
+              </div>
+          </form>
             <div id="paypal-button-container"></div>
             <div class="separator">
               <hr class="line" />

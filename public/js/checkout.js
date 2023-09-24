@@ -17,9 +17,9 @@ if (cartData && Array.isArray(cartData)) {
 
     productDiv.innerHTML = `
                     <div class="checkout_product_product">
-                        <img src="${
-                          item.productImage
-                        }" alt="${item.productTitle}" class="product_image" />
+                        <img src="${item.productImage}" alt="${
+      item.productTitle
+    }" class="product_image" />
                         <div class="product_text_description">
                             <h5 class="product_title">${item.productTitle}</h5>
                             <p class="product_description">${
@@ -39,7 +39,9 @@ if (cartData && Array.isArray(cartData)) {
                           item.productAmount
                         }</p>
                     </div>
-                    <button class="delete" style="color: #000000" data-index="${item.id}">x</button>
+                    <button class="delete" style="color: #000000" data-index="${
+                      item.id
+                    }">x</button>
                 `;
 
     // Append the product element to the "products" div
@@ -150,122 +152,187 @@ function updateSum() {
 }
 
 console.log(updateSum());
+// Add this code after your existing JavaScript
+const couponForm = document.getElementById("coupon-form");
+const couponCodeInput = document.getElementById("coupon-code");
 
+couponForm.addEventListener("submit", function (event) {
+  event.preventDefault();
+  const couponCode = couponCodeInput.value.trim();
 
-  var stripe = Stripe(
-    "pk_test_51NJvzEJ3qhyqI7JFjuCX1kMPm70bFW75EUWA5h4OxOAt14TqQ4D6fuSS1kEZizQeSu4gsEtLuIulV0Hup8JyQRAj00AqHXGk37"
-  );
-
-  var elements = stripe.elements();
-
-  var style = {
-    base: {
-      lineHeight: "1.35",
-      fontSize: "1.11rem",
-      color: "#495057",
-      fontFamily:
-        'apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif',
+  // Send an AJAX request to the server to apply the coupon
+  fetch("/apply-coupon", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
     },
-  };
+    body: JSON.stringify({ couponCode }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success) {
+        console.log(data);
+        // Coupon applied successfully
+        alert("Coupon applied successfully!");
+        document.getElementById("coupon-status").innerHTML =
+          "Coupon applied successfully";
+        document.getElementById("coupon-status").style.color = "green";
+        const currentTotals = document.querySelectorAll(".product_total");
+        currentTotals.forEach((total) => {
+          const newTotalForEachInner = parseFloat(
+            total.innerHTML.replace("£", "")
+          );
+          const newTotalForEach =
+            newTotalForEachInner -
+            (newTotalForEachInner / 100) * Number(data.discountPercentage);
+          console.log(Number(data.discountPercentage));
+          console.log(data.discountPercentage);
+          console.log(newTotalForEach);
+          total.innerHTML = `£${newTotalForEach}`
+          updateSum()
+          console.log(updateSum())
+        });
 
-  // Card number
-  var card = elements.create("cardNumber", {
-    placeholder: "4242 4242 4242 4242",
-    style: style,
-  });
-  card.mount("#card-number");
-
-  // CVC
-  var cvc = elements.create("cardCvc", {
-    placeholder: "123",
-    style: style,
-  });
-  cvc.mount("#card-cvc");
-
-  // Card expiry
-  var exp = elements.create("cardExpiry", {
-    placeholder: "01/12",
-    style: style,
-  });
-  exp.mount("#card-exp");
-
-  // Handle form submission
-  var form = document.getElementById("payment-form");
-
-  let updatedSum; // Declare a variable to store the updated sum
-
-  // ...
-  
-  form.addEventListener("submit", function (event) {
-    const fullName = document.getElementById("name").value
-    document.getElementById("payment-submit").disabled = true;
-setTimeout(function() {
-  document.getElementById("payment-submit").disabled = false;
-
-}, 2000)
-    event.preventDefault();
-    stripe.createToken(card).then(function (result) {
-      if (result.error) {
-        // Display error message to the user
-        var errorElement = document.getElementById("card-errors");
-        errorElement.textContent = result.error.message;
+        // Optionally, update the total amount here if the discount is applied
       } else {
-        // Calculate and store the updated sum
-        updatedSum = updateSum(); // Calculate the sum here
-  
-        // Send the token and the payment amount to your server for processing
-        fetch("/charge", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ token: result.token.id, amount: updatedSum }), // Include the payment amount
-        })
-          .then(function (response) {
-            return response.json();
-          })
-          .then(function (data) {
-            if (data.success) {
-              const orderDetails = {
-                products: cartData, // Your array of cart items
-                total: updatedSum, // Total order amount
-                name: fullName,
-                orderDate: new Date().toISOString() // Current date and time
-            };
-    console.log(orderDetails)
-            // Send the order details to your server using a fetch or AJAX request
-            fetch('/store-order', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(orderDetails)
-            }).then(response => {
-                // Handle the response if needed
-            }).catch(error => {
-                console.error('Error storing order:', error);
-            });
-              // Payment succeeded, you can redirect or show a success message
-              localStorage.clear();
-              window.scroll({
-                top: 0,
-                left: 0,
-                behavior: 'auto' // This provides a smooth scrolling animation
-              });
-              
-              setTimeout(function () {
-                document.body.classList.add('active');
-                svg.setProgress(1);
-            }, 200);
-            } else {
-              // Payment failed, display an error message
-              alert("Payment failed: " + data.error);
-            }
-          });
+        // Coupon validation failed
+        alert(data.message);
       }
+    })
+    .catch((error) => {
+      console.error("Error applying coupon:", error);
     });
+});
+
+var stripe = Stripe(
+  "pk_test_51NJvzEJ3qhyqI7JFjuCX1kMPm70bFW75EUWA5h4OxOAt14TqQ4D6fuSS1kEZizQeSu4gsEtLuIulV0Hup8JyQRAj00AqHXGk37"
+);
+
+var elements = stripe.elements();
+
+var style = {
+  base: {
+    lineHeight: "1.35",
+    fontSize: "1.11rem",
+    color: "#495057",
+    fontFamily:
+      'apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif',
+  },
+};
+
+// Card number
+var card = elements.create("cardNumber", {
+  placeholder: "4242 4242 4242 4242",
+  style: style,
+});
+card.mount("#card-number");
+
+// CVC
+var cvc = elements.create("cardCvc", {
+  placeholder: "123",
+  style: style,
+});
+cvc.mount("#card-cvc");
+
+// Card expiry
+var exp = elements.create("cardExpiry", {
+  placeholder: "01/12",
+  style: style,
+});
+exp.mount("#card-exp");
+
+// Handle form submission
+var form = document.getElementById("payment-form");
+
+let updatedSum; // Declare a variable to store the updated sum
+
+// ...
+
+form.addEventListener("submit", function (event) {
+  const fullName = document.getElementById("name").value;
+  document.getElementById("payment-submit").disabled = true;
+  setTimeout(function () {
+    document.getElementById("payment-submit").disabled = false;
+  }, 2000);
+  event.preventDefault();
+  stripe.createToken(card).then(function (result) {
+    if (result.error) {
+      // Display error message to the user
+      var errorElement = document.getElementById("card-errors");
+      errorElement.textContent = result.error.message;
+    } else {
+      // Calculate and store the updated sum
+      updatedSum = updateSum(); // Calculate the sum here
+
+      // Send the token and the payment amount to your server for processing
+      fetch("/charge", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ token: result.token.id, amount: updatedSum }), // Include the payment amount
+      })
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          if (data.success) {
+            const orderDetails = {
+              products: cartData, // Your array of cart items
+              total: updatedSum, // Total order amount
+              name: fullName,
+              orderDate: new Date().toISOString(), // Current date and time
+            };
+            console.log(orderDetails);
+            // Send the order details to your server using a fetch or AJAX request
+            fetch("/store-order", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(orderDetails),
+            })
+              .then((response) => {
+                // Handle the response if needed
+              })
+              .catch((error) => {
+                console.error("Error storing order:", error);
+              });
+              fetch("/if-procceeded", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ trueOrfalse: true }), // Sending as a JSON object
+              })
+                .then((response) => {
+                  // Handle the response if needed
+                  console.log(response)
+                })
+                .catch((error) => {
+                  console.error("Error storing order:", error);
+                });
+            // Payment succeeded, you can redirect or show a success message
+            localStorage.clear();
+            window.scroll({
+              top: 0,
+              left: 0,
+              behavior: "auto", // This provides a smooth scrolling animation
+            });
+
+            setTimeout(function () {
+              document.body.classList.add("active");
+              svg.setProgress(1);
+            }, 200);
+          } else {
+            // Payment failed, display an error message
+            alert("Payment failed: " + data.error);
+          }
+        });
+    }
   });
-  
+});
+
 initPayPalButton(updateSum());
 
 function initPayPalButton(sum) {
@@ -292,14 +359,14 @@ function initPayPalButton(sum) {
           window.scroll({
             top: 0,
             left: 0,
-            behavior: 'auto' // This provides a smooth scrolling animation
+            behavior: "auto", // This provides a smooth scrolling animation
           });
-          
+
           // window.location = "/"; // Redirect to homepage
           setTimeout(function () {
-            document.body.classList.add('active');
+            document.body.classList.add("active");
             svg.setProgress(1);
-        }, 200);
+          }, 200);
         });
       },
 
