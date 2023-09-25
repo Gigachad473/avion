@@ -209,6 +209,51 @@
   .body {
     display: flex;
   }
+  @media screen and (max-width: 550px) {
+    .body {
+      flex-direction: column;
+    }
+    .tabs {
+      flex-direction: row;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 100%
+    }
+  }
+  @media screen and (max-width: 500px) {
+    .tab-content {
+      margin: 0;
+    }
+    .container {
+      padding: 0;
+    }
+  }
+  @media screen and (max-width: 450px) {
+    h1 {
+      font-size: 24px;
+    }
+    .vertical {
+      rotate: 90deg;
+    top: 70px;
+    left: 50%
+    }
+    .main {
+      flex-direction: column;
+    }
+    .content {
+      margin-top: 40px;
+      text-align: center;
+    }
+    .card {
+      height: 250px
+    }
+    .content h2 {
+      margin-left: 0;
+    }
+    .content p {
+      margin-left: 0;
+    }
+  }
   
   
   
