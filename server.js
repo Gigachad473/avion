@@ -543,7 +543,7 @@ app.post('/forgot-password', (req, res) => {
         res.status(404).send('User not found.');
       } else {
         // Send the password reset email
-        const resetLink = `http://avion-l631.onrender.com/reset-password/${resetToken}`;
+        const resetLink = `https://avion-l631.onrender.com/reset-password/${resetToken}`;
         const mailOptions = {
           from: 'ilahristoforov88@gmail.com',
           to: email,
