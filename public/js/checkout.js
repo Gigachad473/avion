@@ -353,22 +353,54 @@ function initPayPalButton(sum) {
 
       onApprove: function (data, actions) {
         return actions.order.capture().then(function (orderData) {
-          // Handle the approval as needed
+          const orderDetails = {
+            products: cartData, // Your array of cart items
+            total: updatedSum, // Total order amount
+            name: fullName,
+            orderDate: new Date().toISOString(), // Current date and time
+          };
+          console.log(orderDetails);
+          // Send the order details to your server using a fetch or AJAX request
+          fetch("/store-order", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(orderDetails),
+          })
+            .then((response) => {
+              // Handle the response if needed
+            })
+            .catch((error) => {
+              console.error("Error storing order:", error);
+            });
+            fetch("/if-procceeded", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ trueOrfalse: true }), // Sending as a JSON object
+            })
+              .then((response) => {
+                // Handle the response if needed
+                console.log(response)
+              })
+              .catch((error) => {
+                console.error("Error storing order:", error);
+              });
+          // Payment succeeded, you can redirect or show a success message
           localStorage.clear();
-          localStorage.setItem("paymentApproved", "true"); // Store approval status
           window.scroll({
             top: 0,
             left: 0,
             behavior: "auto", // This provides a smooth scrolling animation
           });
 
-          // window.location = "/"; // Redirect to homepage
           setTimeout(function () {
             document.body.classList.add("active");
             svg.setProgress(1);
           }, 200);
-        });
-      },
+        })},
 
       onError: function (err) {
         console.log(err);

@@ -543,7 +543,7 @@ app.post('/forgot-password', (req, res) => {
         res.status(404).send('User not found.');
       } else {
         // Send the password reset email
-        const resetLink = `http://localhost:3000/reset-password/${resetToken}`;
+        const resetLink = `http://avion-l631.onrender.com/reset-password/${resetToken}`;
         const mailOptions = {
           from: 'ilahristoforov88@gmail.com',
           to: email,
@@ -704,9 +704,9 @@ app.post("/store-order", (req, res) => {
       }
     }
   );
-
-  // Redirect or respond as needed
-  res.redirect("https://hekto-yb2r.onrender.com/success");
+setTimeout(function() {
+  res.redirect("https://avion-l631.onrender.com/")
+})
 });
 
 // Start the server
