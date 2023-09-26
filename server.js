@@ -356,6 +356,7 @@ app.get("/login", (req, res) => {
 
 // Handle login (Step 6)
 app.post("/login", async (req, res) => {
+  db.connect()
   const { email, password, rememberMe } = req.body;
 
   db.query(
@@ -443,7 +444,7 @@ app.get("/profile", (req, res) => {
       }
     );
   } else {
-    res.redirect("/login")
+    res.status(502).send("User Id Error")
   }
 });
 
