@@ -76,3 +76,15 @@ if (document.querySelector(".card") === null) {
 } else {
   console.log(false);
 }
+fetch("/profile", {
+  method: "GET",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify(orderDetails),
+})
+  .then((response) => {
+console.log(response)  })
+  .catch((error) => {
+    console.error("Error storing order:", error);
+  });

@@ -402,7 +402,7 @@ app.get("/profile", (req, res) => {
       (userErr, userResults) => {
         if (userErr) {
           console.error("Error fetching user data:", userErr);
-          res.redirect("/login");
+          res.status(407).send("User Error")
         } else {
           const email = userResults[0].email;
 
@@ -413,7 +413,8 @@ app.get("/profile", (req, res) => {
             (orderErr, orderResults) => {
               if (orderErr) {
                 console.error("Error fetching user orders:", orderErr);
-                res.redirect("/login");
+                res.status(408).send("Orders Error")
+
               } else {
                 // Fetch user coupons
                 db.query(
@@ -422,7 +423,8 @@ app.get("/profile", (req, res) => {
                   (couponErr, couponResults) => {
                     if (couponErr) {
                       console.error("Error fetching user coupons:", couponErr);
-                      res.redirect("/login");
+                      res.status(409).send("Coupons Error")
+
                     } else {
                       // Render the profile view and pass user orders and coupons as variables
                       res.render("profile.ejs", {
@@ -440,7 +442,7 @@ app.get("/profile", (req, res) => {
       }
     );
   } else {
-    res.redirect("/login");
+    res.status(502).send("User Id Error")
   }
 });
 
