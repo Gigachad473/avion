@@ -426,6 +426,7 @@ app.get("/profile", (req, res) => {
                       res.status(409).send("Coupons Error")
 
                     } else {
+                      
                       // Render the profile view and pass user orders and coupons as variables
                       res.render("profile.ejs", {
                         email,
