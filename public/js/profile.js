@@ -76,13 +76,7 @@ if (document.querySelector(".card") === null) {
 } else {
   console.log(false);
 }
-fetch("/profile", {
-  method: "GET",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify(orderDetails),
-})
+fetch("/profile")
   .then((response) => {
 console.log(response)  })
   .catch((error) => {

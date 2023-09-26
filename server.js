@@ -443,7 +443,7 @@ app.get("/profile", (req, res) => {
       }
     );
   } else {
-    res.status(502).send("User Id Error")
+    res.redirect("/login")
   }
 });
 
