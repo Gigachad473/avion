@@ -134,7 +134,7 @@ const mailer = async function (title, obj) {
 // Subscription route
 app.post("/subscribe/email", async (req, res) => {
   const email = req.body.email;
-  pool.getConnection((err, connection) => {
+  db.getConnection((err, connection) => {
     if (err) {
       throw err;
     }
@@ -303,7 +303,7 @@ function calculateExpirationDate() {
 app.post("/register", async (req, res) => {
   const { email, password } = req.body;
   const hashedPassword = await bcrypt.hash(password, 10);
-  pool.getConnection((err, connection) => {
+  db.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting a database connection:", err);
     }
@@ -369,7 +369,7 @@ app.get("/login", (req, res) => {
 // Handle login (Step 6)
 app.post("/login", async (req, res) => {
   const { email, password, rememberMe } = req.body;
-  pool.getConnection((err, connection) => {
+  db.getConnection((err, connection) => {
     if (err) {
       console.error("Error getting a database connection:", err);
     }
@@ -430,7 +430,7 @@ res.redirect("/login")
       }
   
       const { userId } = decoded;
-      pool.getConnection((err, connection) => {
+      db.getConnection((err, connection) => {
 
       // Fetch user data
       connection.query(
