@@ -16,7 +16,7 @@ const jwtSecret = "your-secret-key"; // Change this to a strong secret
 const jwt = require("jsonwebtoken"); // Import JWT library
 
 
-const db = mysql.createConnection({
+const db = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
@@ -79,7 +79,7 @@ app.get("/register", (req, res) => {
 
 //?DB
 
-db.connect((err) => {
+db.getConnection((err) => {
   if (err) {
     console.error("MySQL connection error:", err);
   } else {
@@ -134,7 +134,10 @@ const mailer = async function (title, obj) {
 // Subscription route
 app.post("/subscribe/email", async (req, res) => {
   const email = req.body.email;
-
+  pool.getConnection((err, connection) => {
+    if (err) {
+      throw err;
+    }
   // Check if the email exists in the database
   db.query(
     "SELECT * FROM subscriptions WHERE email = ?",
@@ -189,6 +192,7 @@ app.post("/subscribe/email", async (req, res) => {
       }
     }
   );
+  })
 });
 // Check if an email exists in the database
 app.get("/subscribe/check/:email", (req, res) => {
@@ -299,8 +303,11 @@ function calculateExpirationDate() {
 app.post("/register", async (req, res) => {
   const { email, password } = req.body;
   const hashedPassword = await bcrypt.hash(password, 10);
-
-  db.query(
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting a database connection:", err);
+    }
+  connection.query(
     "INSERT INTO users (email, password) VALUES (?, ?)",
     [email, hashedPassword],
     (err, result) => {
@@ -315,7 +322,7 @@ app.post("/register", async (req, res) => {
         const expirationDate = calculateExpirationDate(); // Implement this function
 
         // Insert the coupon into the database
-        db.query(
+        connection.query(
           "INSERT INTO coupons (coupon_code, discount_percentage, user_id, expiration_date, status) VALUES (?, ?, ?, ?, ?)",
           [couponCode, discountPercentage, userId, expirationDate, "unused"],
           (couponErr) => {
@@ -328,9 +335,13 @@ app.post("/register", async (req, res) => {
         );
 
         res.redirect("/login");
+        connection.release(); // Release the connection back to the pool
+
       }
     }
   );
+});
+
 });
 
 app.post("/check-profile", (req, res) => {
@@ -357,17 +368,24 @@ app.get("/login", (req, res) => {
 
 // Handle login (Step 6)
 app.post("/login", async (req, res) => {
-  db.connect()
   const { email, password, rememberMe } = req.body;
+  pool.getConnection((err, connection) => {
+    if (err) {
+      console.error("Error getting a database connection:", err);
+    }
 
-  db.query(
+  connection.query(
     "SELECT * FROM users WHERE email = ?",
     [email],
     async (err, results) => {
       if (err) {
         console.error("Login failed:", err);
+        connection.release(); // Release the connection back to the pool
+
         res.status(500).send("Internal Server Error");
       } else if (results.length === 0) {
+        connection.release(); // Release the connection back to the pool
+
         // User does not exist
         res.status(405).send("User Not Found");
       } else {
@@ -381,14 +399,22 @@ app.post("/login", async (req, res) => {
           const token = jwt.sign({ userId }, jwtSecret, { expiresIn });
 
           res.cookie("token", token, { httpOnly: true });
+          connection.release(); // Release the connection back to the pool
+
           res.redirect("/profile");
+
         } else {
+          connection.release(); // Release the connection back to the pool
+
           // Email and password do not match
           res.status(401).send("Unauthorized");
+
         }
       }
     }
   );
+});
+
 });
 
 
@@ -404,38 +430,47 @@ res.redirect("/login")
       }
   
       const { userId } = decoded;
-  
+      pool.getConnection((err, connection) => {
+
       // Fetch user data
-      db.query(
+      connection.query(
         "SELECT email FROM users WHERE id = ?",
         [userId],
         (userErr, userResults) => {
           if (userErr) {
             console.error("Error fetching user data:", userErr);
+            connection.release(); // Release the connection back to the pool
+
             res.status(407).send("User Error")
           } else {
             const email = userResults[0].email;
-  
+
             // Fetch user orders based on their email
-            db.query(
+            connection.query(
               "SELECT * FROM orders2 WHERE user_email = ?",
               [email],
               (orderErr, orderResults) => {
                 if (orderErr) {
                   console.error("Error fetching user orders:", orderErr);
+                  connection.release(); // Release the connection back to the pool
+
                   res.status(408).send("Orders Error")
   
                 } else {
                   // Fetch user coupons
-                  db.query(
+                  connection.query(
                     "SELECT * FROM coupons WHERE user_id = ? AND status = 'unused' ",
                     [userId],
                     (couponErr, couponResults) => {
                       if (couponErr) {
                         console.error("Error fetching user coupons:", couponErr);
+                        connection.release(); // Release the connection back to the pool
+
                         res.status(409).send("Coupons Error")
   
                       } else {
+                        connection.release(); // Release the connection back to the pool
+
                         
                         // Render the profile view and pass user orders and coupons as variables
                         res.render("profile.ejs", {
@@ -452,6 +487,8 @@ res.redirect("/login")
           }
         }
       );
+    })
+
   });
   }
 
