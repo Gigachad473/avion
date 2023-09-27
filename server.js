@@ -12,7 +12,9 @@ const port = 8080;
 const stripe = require("stripe")(`${process.env.STRIPE_SECRET_TEST}`);
 const cookieParser = require("cookie-parser");
 const bcrypt = require("bcrypt");
-const session = require("express-session");
+const jwtSecret = "your-secret-key"; // Change this to a strong secret
+const jwt = require("jsonwebtoken"); // Import JWT library
+
 
 const db = mysql.createConnection({
   host: process.env.DB_HOST,
@@ -41,16 +43,6 @@ app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(
-  session({
-    secret: "129urieodsfoiu2uroikjshohkfskkfdsjfL:@fjgslgksdf",
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      maxAge: 1 * 24 * 60 * 60 * 1000, // 30 days
-    },
-  })
-);
 
 let staticPath = path.join(__dirname, "public");
 app.set("views", path.join(staticPath, "views"));
@@ -342,11 +334,18 @@ app.post("/register", async (req, res) => {
 });
 
 app.post("/check-profile", (req, res) => {
-  if (req.session.userId) {
+  const token = req.cookies.token;
+
+  jwt.verify(token, jwtSecret, (err, decoded) => {
+
+  const { userId } = decoded;
+  if (userId) {
     res.status(200).send("Success");
   } else {
     res.status(404).send("Error");
   }
+})
+
 });
 
 // Login form (HTML)
@@ -375,13 +374,12 @@ app.post("/login", async (req, res) => {
 
         if (match) {
           // Set the session cookie maxAge based on the "Remember Me" checkbox
-          if (rememberMe) {
-            req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000; // 30 days in milliseconds
-          }
+          const userId = user.id;
+          const expiresIn = rememberMe ? "30d" : "1d";
+          const token = jwt.sign({ userId }, jwtSecret, { expiresIn });
 
-          req.session.userId = user.id;
-          req.session.email = user.email; // Store the user's email in the session
-          res.status(200).send("Success");
+          res.cookie("token", token, { httpOnly: true });
+          res.redirect("/profile");
         } else {
           // Email and password do not match
           res.status(401).send("Unauthorized");
@@ -393,8 +391,17 @@ app.post("/login", async (req, res) => {
 
 
 app.get("/profile", (req, res) => {
-  if (req.session.userId) {
-    const userId = req.session.userId;
+  const token = req.cookies.token;
+  if (!token) {
+    console.log("No Token")
+    return;
+  }
+  jwt.verify(token, jwtSecret, (err, decoded) => {
+    if (err) {
+      console.log("JWT Error")
+    }
+
+    const { userId } = decoded;
 
     // Fetch user data
     db.query(
@@ -443,23 +450,25 @@ app.get("/profile", (req, res) => {
         }
       }
     );
-  } else {
-    res.status(502).send("User Id Error")
-  }
 });
+});
+
 
 // "Stay Signed In" Feature (Step 8)
 app.get("/logout", (req, res) => {
-  req.session.destroy(() => {
-    res.redirect("/login");
-  });
+  res.clearCookie("token");
+  res.redirect("/login");
 });
 let shouldMarkCouponAsUsed = false; // Initialize the flag
 let results2 = []; // Initialize results as an empty array
 
 app.post("/apply-coupon", (req, res) => {
   const { couponCode } = req.body;
-  const userId = req.session.userId; // Assuming you have user sessions
+  const token = req.cookies.token;
+
+  jwt.verify(token, jwtSecret, (err, decoded) => {
+    const { userId } = decoded;
+
 
   // Check if the coupon exists and is not used
   db.query(
@@ -489,6 +498,8 @@ results2 = results
       }
     }
   );
+})
+
 });
 
 app.post("/if-procceeded", (req, res) => {
