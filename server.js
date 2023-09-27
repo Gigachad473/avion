@@ -335,16 +335,18 @@ app.post("/register", async (req, res) => {
 
 app.post("/check-profile", (req, res) => {
   const token = req.cookies.token;
-
+if(token) {
   jwt.verify(token, jwtSecret, (err, decoded) => {
 
-  const { userId } = decoded;
-  if (userId) {
-    res.status(200).send("Success");
-  } else {
-    res.status(404).send("Error");
-  }
-})
+    const { userId } = decoded;
+    if (userId) {
+      res.status(200).send("Success");
+    }
+  })
+} else {
+  res.status(404).send("Error");
+}
+
 
 });
 
@@ -393,64 +395,66 @@ app.post("/login", async (req, res) => {
 app.get("/profile", (req, res) => {
   const token = req.cookies.token;
   if (!token) {
-    console.log("No Token")
+res.redirect("/login")
     return;
-  }
-  jwt.verify(token, jwtSecret, (err, decoded) => {
-    if (err) {
-      console.log("JWT Error")
-    }
-
-    const { userId } = decoded;
-
-    // Fetch user data
-    db.query(
-      "SELECT email FROM users WHERE id = ?",
-      [userId],
-      (userErr, userResults) => {
-        if (userErr) {
-          console.error("Error fetching user data:", userErr);
-          res.status(407).send("User Error")
-        } else {
-          const email = userResults[0].email;
-
-          // Fetch user orders based on their email
-          db.query(
-            "SELECT * FROM orders2 WHERE user_email = ?",
-            [email],
-            (orderErr, orderResults) => {
-              if (orderErr) {
-                console.error("Error fetching user orders:", orderErr);
-                res.status(408).send("Orders Error")
-
-              } else {
-                // Fetch user coupons
-                db.query(
-                  "SELECT * FROM coupons WHERE user_id = ? AND status = 'unused' ",
-                  [userId],
-                  (couponErr, couponResults) => {
-                    if (couponErr) {
-                      console.error("Error fetching user coupons:", couponErr);
-                      res.status(409).send("Coupons Error")
-
-                    } else {
-                      
-                      // Render the profile view and pass user orders and coupons as variables
-                      res.render("profile.ejs", {
-                        email,
-                        orders: orderResults,
-                        coupons: couponResults, // Pass the coupons variable here
-                      });
-                    }
-                  }
-                );
-              }
-            }
-          );
-        }
+  } else {
+    jwt.verify(token, jwtSecret, (err, decoded) => {
+      if (err) {
+        console.log("JWT Error")
       }
-    );
-});
+  
+      const { userId } = decoded;
+  
+      // Fetch user data
+      db.query(
+        "SELECT email FROM users WHERE id = ?",
+        [userId],
+        (userErr, userResults) => {
+          if (userErr) {
+            console.error("Error fetching user data:", userErr);
+            res.status(407).send("User Error")
+          } else {
+            const email = userResults[0].email;
+  
+            // Fetch user orders based on their email
+            db.query(
+              "SELECT * FROM orders2 WHERE user_email = ?",
+              [email],
+              (orderErr, orderResults) => {
+                if (orderErr) {
+                  console.error("Error fetching user orders:", orderErr);
+                  res.status(408).send("Orders Error")
+  
+                } else {
+                  // Fetch user coupons
+                  db.query(
+                    "SELECT * FROM coupons WHERE user_id = ? AND status = 'unused' ",
+                    [userId],
+                    (couponErr, couponResults) => {
+                      if (couponErr) {
+                        console.error("Error fetching user coupons:", couponErr);
+                        res.status(409).send("Coupons Error")
+  
+                      } else {
+                        
+                        // Render the profile view and pass user orders and coupons as variables
+                        res.render("profile.ejs", {
+                          email,
+                          orders: orderResults,
+                          coupons: couponResults, // Pass the coupons variable here
+                        });
+                      }
+                    }
+                  );
+                }
+              }
+            );
+          }
+        }
+      );
+  });
+  }
+
 });
 
 
@@ -465,40 +469,46 @@ let results2 = []; // Initialize results as an empty array
 app.post("/apply-coupon", (req, res) => {
   const { couponCode } = req.body;
   const token = req.cookies.token;
-
-  jwt.verify(token, jwtSecret, (err, decoded) => {
-    const { userId } = decoded;
-
-
-  // Check if the coupon exists and is not used
-  db.query(
-    "SELECT * FROM coupons WHERE coupon_code = ? AND user_id = ? AND status = 'unused'",
-    [couponCode, userId],
-    (err, results) => {
-      if (err) {
-        console.error("Coupon validation failed:", err);
-        res.json({ success: false, message: "Coupon validation failed" });
-      } else if (results.length === 0) {
-        res.json({ success: false, message: "Coupon does not exist or is already used" });
-      } else {
-        // Get the discount percentage from the database results
-        const discountPercentage = results[0].discount_percentage;
-
-        // Apply the discount logic here if needed
-        // Optionally, update the total amount
-
-        // Mark the coupon as used
-results2 = results
-        shouldMarkCouponAsUsed = true;
-
-
-
-        // Include the discount percentage in the response
-        res.json({ success: true, discountPercentage });
+  if(token) {
+    jwt.verify(token, jwtSecret, (err, decoded) => {
+      const { userId } = decoded;
+  
+  
+    // Check if the coupon exists and is not used
+    db.query(
+      "SELECT * FROM coupons WHERE coupon_code = ? AND user_id = ? AND status = 'unused'",
+      [couponCode, userId],
+      (err, results) => {
+        if (err) {
+          console.error("Coupon validation failed:", err);
+          res.json({ success: false, message: "Coupon validation failed" });
+        } else if (results.length === 0) {
+          res.json({ success: false, message: "Coupon does not exist or is already used" });
+        } else {
+          // Get the discount percentage from the database results
+          const discountPercentage = results[0].discount_percentage;
+  
+          // Apply the discount logic here if needed
+          // Optionally, update the total amount
+  
+          // Mark the coupon as used
+  results2 = results
+          shouldMarkCouponAsUsed = true;
+  
+  
+  
+          // Include the discount percentage in the response
+          res.json({ success: true, discountPercentage });
+        }
       }
-    }
-  );
-})
+    );
+  })
+  } else {
+    res.json({ success: false, message: "You are not logged in" });
+
+  }
+
+
 
 });
 
