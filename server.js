@@ -14,6 +14,8 @@ const cookieParser = require("cookie-parser");
 const bcrypt = require("bcrypt");
 const jwtSecret = "your-secret-key"; // Change this to a strong secret
 const jwt = require("jsonwebtoken"); // Import JWT library
+res.clearCookie("token");
+
 
 
 const db = mysql.createPool({
