@@ -12,7 +12,6 @@ const productsDiv = document.getElementById("products");
 if (cartData && Array.isArray(cartData)) {
   // Loop through each item in the cart and create product elements
   cartData.forEach((item) => {
-    console.log(item.productPrice)
     const productDiv = document.createElement("div");
     productDiv.classList.add("checkout_product_block");
 
@@ -152,7 +151,6 @@ function updateSum() {
   return sum;
 }
 
-console.log(updateSum());
 // Add this code after your existing JavaScript
 const couponForm = document.getElementById("coupon-form");
 const couponCodeInput = document.getElementById("coupon-code");
@@ -172,7 +170,6 @@ couponForm.addEventListener("submit", function (event) {
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
-        console.log(data);
         // Coupon applied successfully
         document.getElementById("coupon-status").innerHTML =
           "Coupon applied successfully";
@@ -185,12 +182,8 @@ couponForm.addEventListener("submit", function (event) {
           const newTotalForEach =
             newTotalForEachInner -
             (newTotalForEachInner / 100) * Number(data.discountPercentage);
-          console.log(Number(data.discountPercentage));
-          console.log(data.discountPercentage);
-          console.log(newTotalForEach);
           total.innerHTML = `£${newTotalForEach}`
           updateSum()
-          console.log(updateSum())
         });
 
         // Optionally, update the total amount here if the discount is applied
@@ -283,7 +276,6 @@ form.addEventListener("submit", function (event) {
               name: fullName,
               orderDate: new Date().toISOString(), // Current date and time
             };
-            console.log(orderDetails);
             // Send the order details to your server using a fetch or AJAX request
             fetch("/store-order", {
               method: "POST",
@@ -307,7 +299,6 @@ form.addEventListener("submit", function (event) {
               })
                 .then((response) => {
                   // Handle the response if needed
-                  console.log(response)
                 })
                 .catch((error) => {
                   console.error("Error storing order:", error);
@@ -359,7 +350,6 @@ function initPayPalButton(sum) {
             name: fullName,
             orderDate: new Date().toISOString(), // Current date and time
           };
-          console.log(orderDetails);
           // Send the order details to your server using a fetch or AJAX request
           fetch("/store-order", {
             method: "POST",
@@ -383,7 +373,6 @@ function initPayPalButton(sum) {
             })
               .then((response) => {
                 // Handle the response if needed
-                console.log(response)
               })
               .catch((error) => {
                 console.error("Error storing order:", error);
@@ -403,7 +392,6 @@ function initPayPalButton(sum) {
         })},
 
       onError: function (err) {
-        console.log(err);
       },
     })
     .render("#paypal-button-container");

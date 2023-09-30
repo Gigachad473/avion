@@ -3,7 +3,6 @@ const increaseAmount = document.getElementById("productPlus");
 const productAmount = document.getElementById("productAmount");
 const productAmount2 = document.getElementById("productAmount");
 const productTitle = document.querySelector(".product_title").innerHTML;
-console.log(productTitle);
 const productImage = document.querySelector(".product_image").src;
 const productDescription = document.querySelector(".product_desc").innerHTML;
 
@@ -112,7 +111,6 @@ function updateCartData() {
   }
 
   // Add the updated product to the cart
-  console.log(productPrice)
   cartData.push({
     productTitle: productTitle,
     productAmount: parseInt(productAmount.innerHTML),
@@ -133,7 +131,6 @@ function updateCartData() {
       productAmounts[index].textContent =
         cartData[existingItemIndex].productAmount;
     } else {
-      console.log(false);
     }
   });
 }

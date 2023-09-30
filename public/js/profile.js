@@ -74,11 +74,10 @@ function copyIt() {
 if (document.querySelector(".card") === null) {
   document.querySelector(".container").innerHTML = "You dont have any coupons";
 } else {
-  console.log(false);
 }
 fetch("/profile")
   .then((response) => {
-console.log(response)  })
+  })
   .catch((error) => {
     console.error("Error storing order:", error);
   });
