@@ -46,18 +46,10 @@ app.use(cookieParser());
 
 let staticPath = path.join(__dirname, "public");
 app.set("views", path.join(staticPath, "views"));
-// Middleware to clear cookies for all responses
-app.use((req, res, next) => {
-  // Clear cookies by setting empty values and an expiration date in the past
-  res.setHeader('Set-Cookie', 'token=; expires=Thu, 01 Jan 1970 00:00:00 GMT');
 
-  // Continue processing the request
-  next();
-});
 // Set the view engine to EJS
 app.set("view engine", "ejs");
 app.get("/", (req, res) => {
-
   res.sendFile(path.join(staticPath, "index.html"));
 });
 app.get("/the-lucy-lamp", (req, res) => {
